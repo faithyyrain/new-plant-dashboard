@@ -2367,6 +2367,16 @@ body.dashboard-card-open .room-view-switcher {
   color: #405039;
 }
 
+.room-view-button.drag-room-target {
+  background: rgba(190, 207, 167, 0.96);
+  border-color: rgb(137, 157, 113);
+  transform: translateY(-3px) scale(1.10);
+  filter: brightness(1.08);
+  box-shadow:
+    0 0 0 4px rgba(190, 207, 167, 0.28),
+    0 4px 12px rgba(0, 0, 0, 0.24);
+}
+
 .room-due-badge {
   position: absolute;
   top: -8px;
@@ -3969,6 +3979,46 @@ function setTrashDragHighlight(isActive) {
     "drag-over",
     isActive
   );
+}
+
+function getRoomButtonAtPoint(event) {
+  if (
+    !movingPlant ||
+    !editingPlant ||
+    editMode !== "plants" ||
+    editingPlant.decorative
+  ) {
+    return null;
+  }
+
+  const roomButtons =
+    document.querySelectorAll(".room-view-button");
+
+  for (const button of roomButtons) {
+    const rect = button.getBoundingClientRect();
+
+    if (
+      event.clientX >= rect.left &&
+      event.clientX <= rect.right &&
+      event.clientY >= rect.top &&
+      event.clientY <= rect.bottom
+    ) {
+      return button;
+    }
+  }
+
+  return null;
+}
+
+function setRoomDragHighlight(activeButton) {
+  document
+    .querySelectorAll(".room-view-button")
+    .forEach(button => {
+      button.classList.toggle(
+        "drag-room-target",
+        button === activeButton
+      );
+    });
 }
 
 function playTrashDropEffect() {
@@ -6552,23 +6602,49 @@ document.addEventListener("mousemove", function(event) {
     return;
   }
 
+  const roomTargetButton =
+    movingPlant ? getRoomButtonAtPoint(event) : null;
+
+  setRoomDragHighlight(roomTargetButton);
+
+  if (roomTargetButton) {
+    setTrashDragHighlight(false);
+    return;
+  }
+
   const metrics = getImageMetrics();
 
   const x = event.clientX - metrics.containerRect.left;
   const y = event.clientY - metrics.containerRect.top;
 
-  const newX = ((x - moveOffsetX - metrics.offsetX) / metrics.displayedWidth) * 100;
-  const newY = ((y - moveOffsetY - metrics.offsetY) / metrics.displayedHeight) * 100;
+  const newX =
+    ((x - moveOffsetX - metrics.offsetX) /
+    metrics.displayedWidth) *
+    100;
+
+  const newY =
+    ((y - moveOffsetY - metrics.offsetY) /
+    metrics.displayedHeight) *
+    100;
 
   if (movingDot) {
-    const stickerX = editingPlant.stickerX ?? editingPlant.x;
-    const stickerY = editingPlant.stickerY ?? editingPlant.y;
+    const stickerX =
+      editingPlant.stickerX ?? editingPlant.x;
 
-    editingPlant.markerOffsetX = Number((newX - stickerX).toFixed(1));
-    editingPlant.markerOffsetY = Number((newY - stickerY).toFixed(1));
+    const stickerY =
+      editingPlant.stickerY ?? editingPlant.y;
+
+    editingPlant.markerOffsetX =
+      Number((newX - stickerX).toFixed(1));
+
+    editingPlant.markerOffsetY =
+      Number((newY - stickerY).toFixed(1));
   } else {
-    editingPlant.stickerX = Number(newX.toFixed(1));
-    editingPlant.stickerY = Number(newY.toFixed(1));
+    editingPlant.stickerX =
+      Number(newX.toFixed(1));
+
+    editingPlant.stickerY =
+      Number(newY.toFixed(1));
   }
 
   if (movingPlant) {
@@ -6580,7 +6656,6 @@ document.addEventListener("mousemove", function(event) {
   }
 
   positionMarkers();
-
 });
 
 document.addEventListener("mouseup", function(event) {
@@ -6663,8 +6738,38 @@ document.body.classList.remove("sticker-dragging");
   }
 
   if ((!movingPlant && !movingDot) || !editingPlant) {
+    setRoomDragHighlight(null);
     return;
   }
+
+  const roomTargetButton =
+    movingPlant ? getRoomButtonAtPoint(event) : null;
+
+  if (roomTargetButton) {
+    const targetRoom =
+      Number(roomTargetButton.dataset.room);
+
+    setRoomDragHighlight(null);
+    setTrashDragHighlight(false);
+
+    movingPlant = false;
+    movingDot = false;
+
+    editingPlant.room = targetRoom;
+
+    savePlantToFirebase(editingPlant);
+
+    switchRoom(targetRoom, event);
+
+    applyEditModeView();
+    positionMarkers();
+    updateRoomDueBadges();
+    positionEditControlsAbovePlant(editingPlant);
+
+    return;
+  }
+
+  setRoomDragHighlight(null);
 
   if (movingPlant && isPointerOverTrash(event)) {
     moveEditingStickerToTrash();
