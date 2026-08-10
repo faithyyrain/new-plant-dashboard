@@ -1,0 +1,6955 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="icon" type="image/png" href="plant-dashboard-icon.png?v=4">
+    <link rel="apple-touch-icon" href="plant-dashboard-icon.png?v=4">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>New House Plant Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+
+.login-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(245, 241, 233, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.login-card {
+  background: rgba(255, 255, 255, 0.88);
+  border-radius: 24px;
+  padding: 28px 34px;
+  text-align: center;
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.25);
+  font-family: "Nunito", Arial, sans-serif;
+}
+
+.login-card h2 {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.login-card p {
+  margin: 0 0 18px 0;
+  color: #555;
+}
+
+.login-card input {
+  display: block;
+  width: 230px;
+  margin: 10px auto;
+  padding: 10px 12px;
+  border: 1px solid rgba(85, 85, 85, 0.25);
+  border-radius: 12px;
+  font-family: "Nunito", Arial, sans-serif;
+  font-size: 15px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.login-card input:focus {
+  border-color: #77b5b8;
+  box-shadow: 0 0 0 3px rgba(119, 181, 184, 0.22);
+}
+
+.login-card button {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  background: #77b5b8;
+  color: white;
+  font-family: "Nunito", Arial, sans-serif;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* ===== BASE PAGE STYLES ===== */
+
+body {
+  margin: 0;
+  font-family: "Nunito", Arial, sans-serif;
+  overflow: hidden;
+  background: #111;
+}
+
+strong {
+  font-family: "Nunito", Arial, sans-serif;
+  font-weight: 800;
+}
+
+h2, .status-pill, .close-button, .legend {
+  font-family: "Nunito", Arial, sans-serif;
+}
+
+/* ===== BUTTON STYLES ===== */
+
+.button-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  align-items: center;
+  margin-top: 18px;
+  width: 100%;
+}
+
+.button-row.even-buttons {
+  justify-content: space-evenly;
+  gap: 0;
+}
+
+.close-button, .watered-button, .fertilized-button, .delay-button {
+  padding: 10px 12px;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 750;
+  font-family: "Nunito", Arial, sans-serif;
+  transition: filter 0.15s ease, transform 0.15s ease;
+  white-space: nowrap;
+}
+
+.close-button {
+  background: #323232;
+}
+
+.watered-button, .fertilized-button, .delay-button {
+  background: #b7b4b0;
+}
+
+.delay-button {
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+}
+
+.delay-half {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  padding: 10px 0;
+  cursor: pointer;
+  user-select: none;
+  box-sizing: border-box;
+  transition: filter 0.15s ease, background 0.15s ease, font-size 0.15s ease;
+}
+
+.delay-button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.55);
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.delay-half:hover {
+  filter: brightness(1.12);
+  background: rgba(255, 255, 255, 0.14);
+  transform: none;
+}
+
+.delay-half:hover span {
+  transform: scale(1.08);
+}
+
+.delay-half.delay-half-active {
+  background: #dab668;
+  box-shadow: inset 0 0 0 999px #dab668;
+}
+
+.watered-button:hover, .fertilized-button:hover, .close-button:hover {
+  filter: brightness(1.08);
+  transform: scale(1.05);
+}
+
+/* ===== CALENDER PANELS ===== */
+
+.edit-slider-panel {
+  display: none;
+  position: fixed;
+  top: 96px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 7000;
+  width: 310px;
+  box-sizing: border-box;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 2px solid rgb(180, 160, 136);
+  background: rgb(232, 224, 212);
+  box-shadow: 0 0 14px rgba(8, 8, 8, 0.206);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.edit-slider-panel.open {
+  display: flex;
+}
+
+.edit-slider-panel span {
+  display: none;
+  width: 48px;
+  color: #333;
+  font-size: 14px;
+  font-weight: 800;
+  font-family: "Nunito", Arial, sans-serif;
+}
+
+.edit-slider-panel input {
+  flex: 1;
+  accent-color: #b45d77;
+}
+
+.edit-slider-panel input::-webkit-slider-thumb {
+  cursor: pointer;
+}
+
+.edit-slider-panel input::-webkit-slider-thumb:hover {
+  filter: brightness(1.18);
+  transform: scale(1.08);
+}
+
+.sticker-select-popup {
+  display: none;
+  position: fixed;
+  z-index: 8000;
+  min-width: 170px;
+  max-width: 240px;
+  padding: 10px;
+  border-radius: 16px;
+  background: rgba(224, 221, 215, 0.82);
+  box-shadow: 0 0 14px rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.sticker-select-popup.open {
+  display: block;
+}
+
+.sticker-select-popup-title {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  font-weight: 800;
+  color: #333;
+  text-align: center;
+}
+
+.sticker-select-popup button {
+  display: block;
+  width: 100%;
+  margin: 5px 0;
+  padding: 7px 10px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(84, 87, 87, 0.84);
+  color: white;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: "Nunito", Arial, sans-serif;
+  font-weight: 800;
+  text-align: center;
+}
+
+.sticker-select-popup button:hover {
+  filter: brightness(1.12);
+  transform: scale(1.02);
+}
+
+.calendar-panel {
+  width: 390px;
+  border-radius: 22px;
+  overflow: hidden;
+  background: rgba(255, 252, 247, 0.671);
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
+}
+
+.calendar-main {
+  padding: 14px;
+}
+
+.calendar-header {
+  background: rgba(85, 85, 85, 0.198);
+  border-radius: 16px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+}
+
+.calendar-header h3 {
+  margin: 0;
+  text-align: center;
+  font-family: "Nunito", Arial, sans-serif;
+  color: #34302ce6;
+}
+
+.calendar-weekdays, .calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.calendar-weekdays div {
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: #555;
+}
+
+.calendar-weekdays {
+  margin-bottom: 10px;
+}
+
+.calendar-day {
+  min-height: 38px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.813);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: default;
+  font-size: 14px;
+  color: #333;
+}
+
+.calendar-day.selected-day {
+  background: rgba(203, 203, 203, 0.408);
+  box-shadow: 0 0 0 2px rgba(178, 178, 177, 0.483);
+}
+
+.calendar-day.has-due {
+  cursor: pointer;
+}
+
+.calendar-day:hover {
+  filter: brightness(1.05);
+}
+
+.calendar-day.empty {
+  background: transparent;
+}
+
+.calendar-day.today {
+  background: rgba(152, 248, 155, 0.28);
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.35);
+}
+
+.calendar-dot-row {
+  display: flex;
+  gap: 1px;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f07e97;
+}
+
+.calendar-watered-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #5db6c4;
+}
+
+.fertilizer-calendar-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #a29888;
+}
+
+/* ===== UPCOMING CHECKS PANEL ===== */
+
+.upcoming-panel {
+  padding: 14px 18px 14px;
+  background: rgba(50, 50, 50, 0.72);
+  color: white;
+}
+
+.upcoming-panel h3 {
+  margin: 0 0 10px 0;
+  font-family: "Nunito", Arial, sans-serif;
+}
+
+.upcoming-item {
+  font-size: 13px;
+  line-height: 1.35;
+  margin: 6px 0;
+}
+
+.upcoming-item:last-child {
+  margin-bottom: 0;
+}
+
+.clickable-upcoming {
+  cursor: pointer;
+  padding: 5px 6px;
+  border-radius: 8px;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.clickable-upcoming:hover {
+  background: rgba(255, 255, 255, 0.14);
+  transform: scale(1.02);
+}
+
+/* ===== PLANTS DUE / WATERED PANEL ===== */
+
+.due-panel {
+  display: none;
+  position: absolute;
+  right: calc(100% + 14px);
+  top: 0;
+  flex-direction: column;
+  width: 310px;
+  max-height: 470px;
+  overflow-y: auto;
+  border-radius: 22px;
+  padding: 16px 16px 4px 16px;
+  background: rgba(255, 250, 242, 0.68);
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-sizing: border-box;
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* older Microsoft browsers */
+}
+
+.due-panel::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Edge */
+}
+
+.due-panel.watered-only {
+  width: max-content;
+  max-width: calc(100vw - 60px);
+  background: rgba(245, 251, 250, 0.68);
+}
+
+.due-panel.watered-only .due-plant-name {
+  white-space: nowrap;
+}
+
+.due-panel.today-with-fertilizer {
+  width: 400px;
+}
+
+.due-panel.today-no-fertilizer {
+  width: 330px;
+}
+
+.due-panel.open {
+  display: flex;
+}
+
+.due-panel-header {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 6px;
+  background: rgba(50, 50, 50, 0.16);
+  border-radius: 16px;
+  padding: 10px 38px 10px 12px;
+}
+
+.due-panel-header h3 {
+  margin: 0;
+  font-size: 17px;
+  color: #333;
+  font-family: "Nunito", Arial, sans-serif;
+}
+
+.due-close-button {
+  position: absolute;
+  right: 8px;
+  border: none;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  background: rgba(34, 34, 34, 0.25);
+  color: #1d1d1d;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.due-close-button:hover {
+  filter: brightness(1.08);
+  transform: scale(1.14);
+}
+
+#duePlantList {
+  display: block;
+  margin-top: 2px;
+}
+
+.due-plant-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0;
+  min-height: 78px;
+  height: auto;
+  border-bottom: 1px solid rgba(50, 50, 50, 0.12);
+}
+
+.due-panel.watered-only .due-plant-item {
+  width: max-content;
+  padding: 4px 6px;
+  gap: 4px;
+  min-height: 50px;
+}
+
+.due-plant-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+}
+
+.due-plant-item:last-child {
+  border-bottom: none;
+}
+
+.due-plant-photo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.due-panel.watered-only .due-plant-photo {
+  width: 42px;
+  height: 42px;
+  margin: 3px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.due-panel.watered-only #duePlantList,
+.due-panel.watered-only .due-plant-main {
+  width: max-content;
+}
+
+.due-panel.watered-only .due-plant-main {
+  flex: none;
+  gap: 10px;
+}
+
+.due-panel.watered-only .due-plant-name {
+  flex: none;
+  white-space: nowrap;
+}
+
+.due-panel.watered-only .due-plant-photo:hover {
+  transform: scale(1.07);
+}
+
+.due-plant-name {
+  font-size: 15px;
+  color: #333;
+  line-height: 1.50;
+}
+
+.due-plant-name-button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.due-plant-name-button:hover {
+  text-decoration: none;
+  color: #5a7147;
+  font-weight: 750;
+}
+
+.due-plant-fertilizer-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #9f9584;
+  flex-shrink: 0;
+  align-self: center;
+  margin-left: 2px;
+}
+
+.due-plant-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+  flex: 1;
+}
+
+.due-plant-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-left: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.due-mini-button {
+  width: auto;
+  min-width: 60px;
+  padding: 5px 9px;
+  border: none;
+  border-radius: 7px;
+  background: #8c8981;
+  color: white;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: "Nunito", Arial, sans-serif;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.due-mini-button:hover {
+  filter: brightness(1.18);
+  transform: scale(1.04);
+}
+
+.due-mini-button.watered-active {
+  background: #77b5b8;
+}
+
+.due-mini-button.fertilized-active {
+  background: #a29888;
+}
+
+.due-mini-button.delayed-active {
+  background: #e4b164;
+}
+
+.due-mini-button.earlier-active {
+  background: #e4b164;
+}
+
+.due-mini-button.delay-back-button {
+  background: #8c8981;
+}
+
+.due-mini-button.delay-back-button.earlier-active {
+  background: #e4b164;
+}
+
+.sticker-edit-controls {
+  position: fixed;
+  top: 30px !important;
+  left: 50% !important;
+  z-index: 7000;
+  display: none;
+  width: auto;
+  height: auto;
+  border: 2px solid rgb(169, 151, 128);
+  border-radius: 999px;
+  background: rgb(232, 224, 212);
+  transform: translateX(-50%);
+  pointer-events: auto;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 14px rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.sticker-edit-controls button {
+  position: static;
+  transform: none !important;
+  border: 2px solid rgb(165, 153, 138);
+  background: rgb(197, 187, 172);
+  color: white;
+  cursor: pointer;
+  font-family: "Nunito", Arial, sans-serif;
+  font-weight: 800;
+  pointer-events: auto;
+  scale: 1;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.sticker-edit-controls button::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.96);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  background: rgba(206, 198, 181, 0.96);
+  color: #3f392f;
+  padding: 4px 7px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: "Nunito", Arial, sans-serif;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.22);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  z-index: 7000;
+}
+
+.sticker-edit-controls button:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+  z-index: 9000;
+}
+
+.sticker-edit-controls button img {
+  width: 88%;
+  height: 88%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+}
+
+.sticker-edit-controls button:hover {
+  filter: brightness(1.12);
+  scale: 1.08;
+  z-index: 8000;
+}
+
+#moveDotButton,
+#sizeStickerButton,
+#rotateSliderButton,
+#widthSliderButton,
+#heightSliderButton,
+#moveRoomButton,
+#sendBackwardStickerButton,
+#bringForwardStickerButton {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  font-size: 22px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.sticker-edit-controls button.active-edit-button {
+  background: rgb(190, 207, 167);
+  border-color: rgb(137, 157, 113);
+  scale: 1.08;
+}
+
+/* ===== ROOM IMAGE + PLANT DOTS ===== */
+
+.room-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #111;
+}
+
+.room-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.plant-sticker.locked-sticker:not(.decor-editable) {
+  pointer-events: none;
+}
+
+.plant-sticker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  z-index: 2;
+  object-fit: contain;
+  user-select: none;
+  filter: drop-shadow(0.35px 0 0 rgba(48, 39, 30, 0.55)) drop-shadow(-0.35px 0 0 rgba(48, 39, 30, 0.55)) drop-shadow(0 0.35px 0 rgba(48, 39, 30, 0.55)) drop-shadow(0 -0.35px 0 rgba(48, 39, 30, 0.55));
+}
+
+.decor-sticker {
+  filter: none;
+}
+
+.plant-sticker.editing-sticker {
+  transform: translate(-50%, -50%) scale(1.06);
+  filter: drop-shadow(0.5px 0 0 rgba(30, 25, 20, 0.75)) drop-shadow(-0.5px 0 0 rgba(30, 25, 20, 0.75)) drop-shadow(0 0.5px 0 rgba(30, 25, 20, 0.75)) drop-shadow(0 -0.5px 0 rgba(30, 25, 20, 0.75)) drop-shadow(0 0 10px rgba(255, 255, 255, 0.75));
+}
+
+.plant-marker {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 100%;
+  border: 2px solid rgb(53, 53, 53);
+  box-shadow: 0 0 8px rgba(41, 70, 47, 0.65);
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  z-index: 5;
+}
+
+.plant-marker.fertilizer-ring {
+  border: 2px solid rgb(53, 53, 53);
+  box-shadow: 0 0 0 2px rgba(254, 219, 105, 0.95), 0 0 10px rgba(254, 219, 105, 0.65);
+}
+
+.plant-marker:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.plant-marker.blue:hover {
+  box-shadow: 0 0 9px rgba(93, 209, 224, 0.55);
+}
+
+.plant-marker.green:hover {
+  box-shadow: 0 0 9px rgba(73, 177, 88, 0.55);
+}
+
+.plant-marker.yellow:hover {
+  box-shadow: 0 0 9px rgba(142, 210, 100, 0.55);
+}
+
+.plant-marker.orange:hover {
+  box-shadow: 0 0 9px rgba(239, 176, 41, 0.55);
+}
+
+.plant-marker.red:hover {
+  box-shadow: 0 0 9px rgba(240, 92, 124, 0.55);
+}
+
+.plant-marker.darkred:hover {
+  box-shadow: 0 0 9px rgba(175, 5, 5, 0.55);
+}
+
+.plant-marker.fertilizer-ring:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  box-shadow: 0 0 0 2px rgba(254, 219, 105, 0.8),
+    0 0 8px rgba(254, 219, 105, 0.45),
+    0 0 10px rgba(255, 255, 255, 0.35);
+}
+
+@media (hover: none) and (pointer: coarse) and (orientation: portrait) {
+  .plant-marker {
+    width: 22px;
+    height: 22px;
+    cursor: default;
+    pointer-events: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+.blue {
+  background: #5dd1e0;
+}
+
+.green {
+  background: #49b158;
+}
+
+.yellow {
+  background: #8ed264;
+}
+
+.orange {
+  background: #efb029;
+}
+
+.red {
+  background: #f05c7c;
+}
+
+.darkred {
+  background: #af0505;
+}
+
+/* ===== PLANT CARD MODAL ===== */
+
+.modal-background {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(49, 41, 36, 0.58);
+  justify-content: center;
+  align-items: center;
+  z-index: 6000;
+}
+
+.modal-card {
+  width: min(860px, calc(100vw - 80px));
+  max-height: calc(100vh - 80px);
+  background: rgb(236, 233, 231);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 0 35px rgba(0, 0, 0, 0.454);
+  display: grid;
+  grid-template-columns: 1fr 0.80fr;
+}
+
+.zoom-view {
+  min-height: 420px;
+  background-image: url("livingroom.jpg?v=room5");
+  background-repeat: no-repeat;
+  background-size: 300%;
+  background-position: center;
+}
+
+.status-pill {
+  display: block;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 18px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* ===== PLANT CARD BASE + STATES ===== */
+
+.modal-card.plant-card-redesign::before {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border: 2px dashed rgba(117, 101, 83, 0.48);
+  border-radius: 22px;
+  pointer-events: none;
+}
+
+.plant-card-edit-button {
+  grid-column: 3;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 98px;
+  padding: 9px 15px;
+  border: 2px solid #9e978f;
+  border-radius: 14px;
+  background: #c9c5bf;
+  color: #494642;
+  cursor: pointer;
+  font-family: "Nunito", Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.28), 0 4px 8px rgba(68, 59, 51, 0.16);
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.plant-card-edit-button svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.plant-card-edit-button:hover {
+  filter: brightness(1.06);
+  transform: translateY(-2px);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.32), 0 7px 12px rgba(68, 59, 51, 0.20);
+}
+
+.plant-card-edit-button:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.repot-info-box {
+  position: relative;
+}
+
+.water-care-panel {
+  border: 2px solid #8ea9ad;
+  background-color: #b9d1d4;
+  background-image: repeating-linear-gradient(0deg, rgba(51, 89, 96, 0.035) 0, rgba(51, 89, 96, 0.035) 1px, transparent 1px, transparent 4px);
+}
+
+.fertilizer-care-panel {
+  border: 2px solid #9f8e7c;
+  background-color: #c5b19b;
+  background-image: repeating-linear-gradient(90deg, rgba(83, 63, 47, 0.04) 0, rgba(83, 63, 47, 0.04) 1px, transparent 1px, transparent 5px);
+}
+
+.water-care-panel .care-action-button {
+  border: 2px solid #6f9196;
+  background: #82afb5;
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.24), 0 6px 11px rgba(55, 78, 81, 0.24);
+}
+
+.fertilizer-care-panel .care-action-button {
+  border: 2px solid #806f61;
+  background: #9b8574;
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.20), 0 6px 11px rgba(72, 55, 44, 0.24);
+}
+
+.care-action-button:hover {
+  filter: brightness(1.07);
+  transform: translateY(-3px) scale(1.025);
+}
+
+.care-action-button:active {
+  transform: translateY(1px) scale(0.97);
+}
+
+.watered-button .care-action-icon {
+  stroke-width: 0;
+}
+
+.watered-button .icon-highlight {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.68);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.watered-button.undo-watered {
+  background: #568f98;
+  border-color: #3f737b;
+  box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.30),
+    0 0 0 4px rgba(91, 147, 156, 0.28),
+    0 7px 13px rgba(48, 75, 79, 0.30);
+}
+
+.fertilized-button.undo-fertilized {
+  background: #766557;
+  border-color: #5f5146;
+  box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.24),
+    0 0 0 4px rgba(126, 105, 89, 0.28),
+    0 7px 13px rgba(64, 48, 38, 0.30);
+}
+
+.date-edit-trigger {
+  display: flex;
+  width: 29px;
+  height: 29px;
+  padding: 5px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(77, 72, 67, 0.28);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.30);
+  color: #56514c;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.date-edit-trigger svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.date-edit-trigger:hover {
+  background: rgba(255, 255, 255, 0.52);
+  transform: translateY(-2px);
+}
+
+.date-edit-trigger:active {
+  transform: translateY(1px) scale(0.96);
+}
+
+.date-edit-trigger.date-selected {
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 0 0 3px rgba(91, 123, 129, 0.28), inset 0 0 0 1px rgba(72, 92, 97, 0.26);
+}
+
+.care-row.date-row-selected {
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 0 0 3px rgba(91, 123, 129, 0.25), inset 0 0 0 1px rgba(72, 92, 97, 0.20);
+}
+
+.modal-card.plant-card-redesign:not(.card-edit-mode) .date-edit-trigger {
+  cursor: default;
+}
+
+.plant-card-footer .close-button svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.3;
+  stroke-linecap: round;
+}
+
+.plant-card-footer .delay-button::after {
+  display: none;
+}
+
+.plant-card-footer .delay-half:hover, .plant-card-footer .close-button:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+}
+
+.plant-card-footer .delay-half:active, .plant-card-footer .close-button:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.plant-card-footer .delay-half.delay-half-active {
+  background: #9a8766;
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.18), 0 0 0 3px rgba(154, 135, 102, 0.24);
+}
+
+.plant-card-footer .delay-button.date-adjust-mode .delay-half {
+  background: #b58a55;
+  border-color: #8f6b3f;
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.18),
+    0 0 0 3px rgba(181, 138, 85, 0.22),
+    0 5px 10px rgba(56, 51, 47, 0.20);
+}
+
+.plant-card-redesign .status-blue {
+  background: #76aeb5;
+}
+
+.plant-card-redesign .status-green {
+  background: #7d9e79;
+}
+
+.plant-card-redesign .status-yellow {
+  background: #a6b878;
+}
+
+.plant-card-redesign .status-orange {
+  background: #c39a5e;
+}
+
+.plant-card-redesign .status-red {
+  background: #bf7c86;
+}
+
+.plant-card-redesign .status-darkred {
+  background: #9c5c5c;
+}
+
+/* ===== PLANT CARD HEADER ===== */
+
+.plant-card-header::before {
+  content: "";
+  display: none;
+}
+
+.plant-card-header h2 {
+  margin: 0;
+  color: #45413d;
+  font-size: 30px;
+  line-height: 1.1;
+  font-weight: 800;
+  grid-column: 1;
+  justify-self: start;
+  text-align: left;
+  padding-left: 12px;
+}
+
+/* ===== CARE PANELS + DETAIL ROWS ===== */
+
+.care-details-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #b3a692;
+  border-radius: 17px;
+  outline: 1px dashed rgba(255, 255, 255, 0.75);
+  outline-offset: -6px;
+  background: repeating-linear-gradient(90deg, rgba(89, 76, 62, 0.035) 0, rgba(89, 76, 62, 0.035) 1px, transparent 1px, transparent 5px),
+    #ddd2c2;
+  color: #48423d;
+  font-weight: 800;
+  box-shadow: 0 5px 11px rgba(67, 57, 49, 0.15);
+  min-height: 43px;
+  font-size: 20px;
+}
+
+.plant-card-footer .close-button,
+.plant-card-footer .delay-half,
+.plant-card-footer .plant-card-edit-button {
+  min-height: 44px;
+}
+
+.water-care-panel .care-row {
+  border: 1px solid rgba(82, 124, 132, 0.28);
+  background: rgba(242, 249, 249, 0.64);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.38), 0 2px 5px rgba(55, 85, 90, 0.08);
+}
+
+.fertilizer-care-panel .care-row {
+  border: 1px solid rgba(117, 92, 73, 0.24);
+  background: rgba(239, 229, 217, 0.66);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.32), 0 2px 5px rgba(82, 62, 47, 0.08);
+}
+
+.care-row > span {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.care-row {
+  display: grid;
+  align-items: center;
+  gap: 8px;
+  color: #48433f;
+  border-radius: 11px;
+  box-sizing: border-box;
+  font-size: 14px;
+  grid-template-columns: 105px minmax(0, 1fr);
+  min-height: 35px;
+  padding: 6px 9px;
+}
+
+.care-date-row {
+  grid-template-columns: 105px 29px minmax(0, 1fr);
+}
+
+.care-action-label {
+  font-size: 12px;
+}
+
+.care-details h3 {
+  color: #46413c;
+  font-weight: 800;
+  margin-bottom: 6px;
+  margin: 0 0 5px;
+  font-size: 19px;
+  display: none;
+}
+
+.care-row-icon {
+  grid-column: 1;
+  display: flex;
+  width: 27px;
+  height: 27px;
+  padding: 4px;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 1px solid rgba(78, 72, 66, 0.25);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.32);
+  color: #56514c;
+}
+
+.care-row-icon svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.date-edit-trigger.care-row-icon {
+  width: 27px;
+  height: 27px;
+  padding: 4px;
+}
+
+.care-action-icon {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  width: 32px;
+  height: 32px;
+}
+
+.care-row-icon, .date-edit-trigger.care-row-icon {
+  width: 27px;
+  height: 27px;
+  padding: 4px;
+}
+
+.care-row strong {
+  font-weight: 800;
+  grid-column: 2;
+  white-space: nowrap;
+}
+
+.care-row > span:last-child {
+  grid-column: 3;
+  white-space: nowrap;
+  justify-self: start;
+}
+
+.plant-card-footer.even-buttons {
+  grid-template-areas: "close edit";
+}
+
+/* ===== PLANT CARD FOOTER CONTROLS ===== */
+
+.plant-card-footer .delay-button {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 0;
+  overflow: visible;
+  border: none;
+  background: transparent;
+  grid-column: 2;
+  grid-area: delay;
+  width: 100%;
+}
+
+.plant-card-footer .close-button {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 2px solid #68645f;
+  border-radius: 15px;
+  background: #7c7872;
+  color: white;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.14), 0 5px 10px rgba(56, 51, 47, 0.20);
+  grid-column: 1;
+  grid-area: close;
+  width: 100%;
+}
+
+.plant-card-header {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.plant-card-main {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  margin-top: 15px;
+  grid-template-columns: 390px minmax(0, 1fr);
+  gap: 14px;
+  align-items: stretch;
+}
+
+.plant-care-area {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  align-self: stretch;
+  height: 100%;
+  gap: 18px;
+}
+
+.plant-care-column {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+  gap: 18px;
+}
+
+.plant-card-footer {
+  padding-bottom: 6px;
+  box-sizing: border-box;
+}
+
+.plant-card-footer .plant-card-edit-button {
+  grid-column: 3;
+  min-height: 48px;
+  border-radius: 15px;
+  border: 2px solid #6d6964;
+  background: #827e78;
+  color: white;
+  grid-area: edit;
+  width: 100%;
+  justify-self: stretch;
+}
+
+.plant-card-footer .close-button svg, .plant-card-footer .plant-card-edit-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.plant-card-footer .close-button:hover, .plant-card-footer .plant-card-edit-button:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.13), 0 6px 11px rgba(56, 51, 47, 0.23);
+}
+
+.plant-card-footer .close-button:active, .plant-card-footer .plant-card-edit-button:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.care-panel {
+  display: grid;
+  box-sizing: border-box;
+  border-radius: 24px;
+  outline: 2px dashed rgba(255, 255, 255, 0.72);
+  outline-offset: -9px;
+  box-shadow: inset 0 0 0 2px rgba(74, 65, 58, 0.12), 0 8px 18px rgba(66, 56, 49, 0.16);
+  flex: 0 0 auto;
+  gap: 10px;
+  min-height: 118px;
+  grid-template-columns: 88px minmax(0, 1fr);
+  column-gap: 0;
+  padding: 12px 14px 12px 12px;
+  align-items: center;
+}
+
+.care-action-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: #fbfaf7;
+  cursor: pointer;
+  font-family: "Nunito", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  box-sizing: border-box;
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+  width: 72px;
+  height: 72px;
+  padding: 7px;
+  border-radius: 17px;
+  justify-self: center;
+  transform: translateX(-2px);
+}
+
+.care-details {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 4px;
+  margin: 0;
+  width: 100%;
+}
+
+.care-row, .care-date-row {
+  grid-template-columns: 27px auto minmax(0, 1fr);
+  gap: 5px;
+  min-height: 35px;
+  padding: 4px 6px;
+  font-size: 13px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.plant-card-footer, .plant-card-footer.even-buttons, .plant-card-footer .delay-button {
+  gap: 9px;
+}
+
+.plant-card-footer .delay-half {
+  width: auto;
+  min-height: 48px;
+  padding: 0 15px;
+  border: 2px solid #6d6964;
+  border-radius: 15px;
+  background: #827e78;
+  color: white;
+  font-size: 15px;
+  font-weight: 800;
+  box-sizing: border-box;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.13), 0 5px 10px rgba(56, 51, 47, 0.20);
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.plant-card-footer .close-button, .plant-card-footer .plant-card-edit-button {
+  min-width: 0;
+  min-height: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border: 2px solid #6d6964;
+  border-radius: 13px;
+  background: #827e78;
+  color: white;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.13), 0 5px 10px rgba(56, 51, 47, 0.20);
+  justify-self: stretch;
+}
+
+/* ===== PLANT CARD EDIT MODE ===== */
+
+.plant-card-footer .plant-card-edit-button.card-edit-active {
+  background: #6f806e;
+  border-color: #566653;
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.18),
+    0 0 0 3px rgba(111, 128, 110, 0.24),
+    0 5px 10px rgba(56, 51, 47, 0.20);
+}
+
+.plant-card-editable-value {
+  border-radius: 7px;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.plant-card-redesign.card-edit-mode .plant-card-editable-value {
+  padding: 2px 5px;
+  background: rgba(255, 255, 255, 0.38);
+  box-shadow: inset 0 0 0 1px rgba(82, 74, 67, 0.22);
+  cursor: text;
+}
+
+.plant-card-number-input {
+  width: 58px;
+  padding: 3px 5px;
+  border: 1px solid rgba(82, 74, 67, 0.38);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #4d4843;
+  font-family: "Nunito", Arial, sans-serif;
+  font-size: inherit;
+  font-weight: 700;
+  text-align: center;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.plant-card-number-input:focus {
+  box-shadow: 0 0 0 3px rgba(111, 128, 110, 0.25);
+}
+
+.plant-card-date-input {
+  width: 132px;
+  padding: 3px 5px;
+  border: 1px solid rgba(82, 74, 67, 0.38);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #4d4843;
+  font-family: "Nunito", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.plant-card-date-input:focus {
+  box-shadow: 0 0 0 3px rgba(111, 128, 110, 0.25);
+}
+
+/* ===== PHOTO INFO OVERLAYS ===== */
+
+.photo-info-row {
+  position: absolute;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  bottom: 19px;
+  gap: 9px;
+  left: 36px;
+  right: 36px;
+}
+
+.photo-info-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  box-sizing: border-box;
+  border: 2px solid rgba(126, 114, 100, 0.72);
+  border-radius: 14px;
+  outline: 1px dashed rgba(255, 255, 255, 0.78);
+  outline-offset: -5px;
+  color: #4d4843;
+  box-shadow: 0 5px 12px rgba(45, 39, 34, 0.23);
+  font-size: 13px;
+  min-height: 36px;
+  padding: 4px 7px;
+  background: rgba(238, 232, 220, 0.68);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.plant-card-redesign .plant-card-status {
+  position: relative;
+  z-index: 1;
+  border: 2px solid rgba(68, 92, 72, 0.30);
+  border-radius: 15px;
+  outline: 1px dashed rgba(255, 255, 255, 0.65);
+  outline-offset: -5px;
+  font-weight: 800;
+  box-shadow: 0 5px 10px rgba(55, 49, 44, 0.15);
+  grid-column: 2;
+  justify-self: end;
+  display: flex;
+  min-width: 145px;
+  margin: 0 6px 0 0;
+  padding: 8px 18px;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  align-self: center;
+  font-size: 16px;
+  line-height: 1;
+  white-space: nowrap;
+  min-height: 38px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+/* ===== PHOTO PANEL ===== */
+
+.plant-photo-panel {
+  position: relative;
+  padding: 11px;
+  border: 2px solid #b3a692;
+  border-radius: 25px;
+  background: linear-gradient(rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.05)), #d6cbbb;
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.24), 0 8px 18px rgba(72, 62, 53, 0.20);
+  min-height: 410px;
+  outline: 2px dashed rgba(117, 101, 83, 0.48);
+  outline-offset: -10px;
+}
+
+.plant-card-redesign .zoom-view {
+  width: 100%;
+  border-radius: 18px;
+  background-position: center;
+  background-size: cover;
+  box-shadow: inset 0 0 0 2px rgba(65, 58, 51, 0.18), 0 3px 8px rgba(49, 43, 38, 0.18);
+  min-height: 410px;
+  border: 3px solid #9d8d79;
+  box-sizing: border-box;
+}
+
+.plant-card-redesign .zoom-view::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: #d6cbbb;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+
+.plant-card-redesign .zoom-view.photo-loading::after {
+  opacity: 1;
+}
+
+/* ===== FINAL CARD SHELL + LAYOUT ===== */
+
+.modal-card.plant-card-redesign {
+  position: relative;
+  display: block;
+  overflow-y: auto;
+  box-sizing: border-box;
+  border: 3px solid #a99d8d;
+  border-radius: 30px;
+  background-color: #e8e0d4;
+  background-image: repeating-linear-gradient(0deg, rgba(89, 76, 62, 0.035) 0, rgba(89, 76, 62, 0.035) 1px, transparent 1px, transparent 4px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.10) 0, rgba(255, 255, 255, 0.10) 1px, transparent 1px, transparent 5px);
+  box-shadow: 0 24px 55px rgba(34, 29, 25, 0.42), inset 0 0 0 7px rgba(255, 255, 255, 0.20);
+  max-height: calc(100vh - 34px);
+  width: min(770px, calc(100vw - 70px));
+  padding: 25px;
+}
+
+.plant-card-footer .delay-half,
+.plant-card-footer .close-button,
+.plant-card-footer .plant-card-edit-button {
+  width: 100%;
+  min-width: 0;
+  height: 38px;
+  min-height: 38px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  border: 2px solid #6d6964;
+  border-radius: 13px;
+  background: #827e78;
+  color: white;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.13), 0 5px 10px rgba(56, 51, 47, 0.20);
+  outline: 1px dashed rgba(83, 67, 49, 0.82);
+  outline-offset: -5px;
+}
+
+.plant-card-footer, .plant-card-footer.even-buttons {
+  z-index: 1;
+  justify-content: stretch;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas: "delay delay" "close edit";
+  gap: 9px;
+  margin: 0;
+  margin-top: auto;
+  padding-top: 2px;
+  width: 92%;
+  align-self: center;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  top: -5px;
+}
+
+/* ===== LEGEND ===== */
+
+.legend-drawer {
+  position: fixed;
+  left: 24px;
+  bottom: 0;
+  z-index: 5500;
+  transform: translateY(calc(100% - 34px));
+  transition: transform 0.22s ease;
+}
+
+.legend-drawer.open {
+  transform: translateY(0);
+}
+
+.legend-tab {
+  position: relative;
+  width: 92px;
+  height: 34px;
+  padding: 0;
+  border: 3px solid rgba(175, 163, 141, 0.738);
+  border-bottom: none;
+  border-radius: 14px 14px 0 0;
+  background: rgba(214, 207, 191, 0.842);
+  color: #333;
+  cursor: pointer;
+  font-size: 15px;
+  font-family: "Nunito", Arial, sans-serif;
+  font-weight: 800;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.28);
+  transition: filter 0.15s ease;
+}
+
+.legend-tab:hover {
+  filter: brightness(1.08);
+}
+
+.legend {
+  display: block;
+  cursor: default;
+  background: rgb(232, 224, 212);
+  padding: 7px 10px;
+  border: 2px solid rgb(180, 160, 136);
+  border-radius: 0 18px 18px 18px;
+  font-size: 12px;
+  font-family: "Nunito", Arial, sans-serif;
+  font-weight: 700;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  margin: 6px 0;
+  gap: 12px;
+}
+
+.legend-dot {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid rgb(53, 53, 53);
+  box-shadow: 0 0 8px rgba(41, 70, 47, 0.65);
+  display: inline-block;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.legend-dot.fertilizer-ring-legend {
+  width: 12px;
+  height: 12px;
+  margin-left: 1.5px;
+  margin-right: 1.5px;
+  background: transparent !important;
+  border: 2px solid #fedb69;
+  box-sizing: border-box;
+  box-shadow: 0 0 0 1.5px rgba(53, 53, 53, 0.85),
+    0 0 8px rgba(254, 219, 105, 0.65),
+    0 0 10px rgba(254, 219, 105, 0.75);
+}
+
+/* ===== EDIT MODE TRASH DRAWER ===== */
+
+.trash-drawer {
+  display: none;
+  position: fixed;
+  right: 28px;
+  bottom: 22px;
+  z-index: 6800;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.trash-drawer.visible {
+  display: flex;
+}
+
+.trash-button {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  width: 64px;
+  height: 64px;
+  padding: 10px;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(139, 123, 99, 0.58);
+  border-radius: 20px;
+  background: #d8cbb9;
+  color: #4d463d;
+  cursor: pointer;
+  box-sizing: border-box;
+  box-shadow: inset 2px 2px 3px rgba(255, 255, 255, 0.72), inset -3px -3px 6px rgba(103, 86, 66, 0.18), 0 5px 18px rgba(0, 0, 0, 0.24);
+  transition: transform 0.18s ease, filter 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.trash-button::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  z-index: 0;
+  border-radius: 17px;
+  clip-path: inset(0 round 17px);
+  pointer-events: none;
+  background: radial-gradient(ellipse 85% 18% at 12% 12%, rgba(250, 246, 236, 0.92) 0 34%, transparent 39%), radial-gradient(ellipse 100% 20% at 88% 29%, rgba(181, 159, 130, 0.58) 0 35%, transparent 41%), radial-gradient(ellipse 95% 18% at 16% 48%, rgba(247, 240, 226, 0.82) 0 34%, transparent 40%), radial-gradient(ellipse 105% 21% at 88% 65%, rgba(174, 151, 123, 0.48) 0 34%, transparent 41%), radial-gradient(ellipse 90% 17% at 15% 88%, rgba(249, 244, 233, 0.76) 0 35%, transparent 41%), linear-gradient(135deg, #dfd4c3, #c9b8a1);
+  transform: scale(1.25) rotate(-3deg);
+  animation: trash-liquid-flow 8s ease-in-out infinite alternate;
+}
+.trash-button::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  z-index: 1;
+  border-radius: 17px;
+  clip-path: inset(0 round 17px);
+  pointer-events: none;
+  background: repeating-radial-gradient(ellipse 95% 24% at 8% 42%, transparent 0 7px, rgba(255, 251, 242, 0.48) 8px 10px, transparent 11px 18px), repeating-radial-gradient(ellipse 105% 27% at 92% 58%, transparent 0 9px, rgba(116, 96, 73, 0.16) 10px 12px, transparent 13px 21px);
+  opacity: 0.82;
+  transform: scale(1.2) rotate(4deg);
+  animation: trash-liquid-ripples 10s ease-in-out infinite alternate;
+}
+.trash-button:hover {
+  filter: brightness(1.07);
+  transform: scale(1.05);
+  border-color: rgba(139, 123, 99, 0.76);
+  box-shadow: inset 2px 2px 3px rgba(255, 255, 255, 0.78), inset -3px -3px 6px rgba(103, 86, 66, 0.16), 0 7px 21px rgba(0, 0, 0, 0.27);
+}
+.trash-button svg {
+  position: relative;
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.trash-button .trash-count {
+  z-index: 3;
+}
+@keyframes trash-liquid-flow {
+  from {
+    transform: translate(-6%, -4%) rotate(-5deg) scale(1.24);
+  }
+  to {
+    transform: translate(6%, 5%) rotate(5deg) scale(1.32);
+  }
+}
+@keyframes trash-liquid-ripples {
+  from {
+    transform: translate(5%, -5%) rotate(4deg) scale(1.18);
+  }
+  to {
+    transform: translate(-6%, 6%) rotate(-4deg) scale(1.28);
+  }
+}
+
+.trash-count {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  display: none;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.78);
+  border-radius: 999px;
+  background: #987d6f;
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.trash-count.has-items {
+  display: flex;
+}
+
+.trash-drawer.drag-over .trash-button {
+  transform: scale(1.18) rotate(-4deg);
+  border-color: rgba(154, 94, 83, 0.92);
+  background: rgba(207, 155, 142, 0.95);
+  color: #fffaf6;
+  box-shadow: 0 0 0 6px rgba(207, 155, 142, 0.25), 0 0 24px rgba(89, 48, 42, 0.58);
+}
+
+.trash-drawer.drop-pulse .trash-button {
+  animation: trash-drop-pop 0.46s ease;
+}
+
+@keyframes trash-drop-pop {
+  0% {
+    transform: scale(1);
+  }
+
+  35% {
+    transform: scale(1.28) rotate(5deg);
+  }
+
+  65% {
+    transform: scale(0.92) rotate(-3deg);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.trash-panel {
+  display: none;
+  width: 285px;
+  max-height: 330px;
+  overflow-y: auto;
+  padding: 0 12px;
+  border: 3px solid rgba(167, 154, 129, 0.694);
+  border-radius: 18px;
+  background: rgba(224, 221, 215, 0.96);
+  box-sizing: border-box;
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  scrollbar-width: none;
+}
+
+.trash-panel::-webkit-scrollbar {
+  display: none;
+}
+
+.trash-panel.open {
+  display: block;
+}
+
+.trash-item {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  min-height: 66px;
+  padding: 5px 6px;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(50, 50, 50, 0.13);
+  box-sizing: border-box;
+}
+
+.trash-item:last-child {
+  border-bottom: none;
+}
+
+.trash-item-sticker {
+  display: block;
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.18));
+  transition: transform 0.15s ease;
+}
+
+.trash-item-sticker:hover {
+  transform: scale(1.08);
+}
+
+.trash-item-sticker:active {
+  cursor: grabbing;
+  transform: scale(0.96);
+}
+
+.trash-item-name {
+  min-width: 0;
+  color: #37332f;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.trash-empty-message {
+  padding: 18px 8px;
+  color: #5b554f;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.trash-restore-ghost {
+  position: fixed;
+  z-index: 9000;
+  max-width: 100px;
+  max-height: 100px;
+  object-fit: contain;
+  opacity: 0.82;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(1.05);
+  filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.38));
+}
+
+@media (hover: none) and (pointer: coarse) and (orientation: portrait) {
+  .trash-drawer {
+    display: none !important;
+  }
+}
+
+/* ===== NEW DASHBOARD CONTROL LAYOUT ===== */
+
+/* Edit-mode circle that expands into a pill */
+
+.edit-mode-control {
+  position: fixed;
+  top: 30px;
+  left: 30px;
+  z-index: 7000;
+  display: flex;
+  width: 52px;
+  height: 52px;
+  padding: 5px;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  overflow: hidden;
+  border: 2px solid rgb(180, 160, 136);
+  border-radius: 999px;
+  background: rgb(232, 224, 212);
+  box-sizing: border-box;
+  box-shadow: 0 0 12px rgba(18, 18, 18, 0.242);
+  backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
+  transition:
+    width 0.22s ease,
+    gap 0.22s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.edit-mode-control.menu-open {
+  width: 140px;
+  gap: 8px;
+}
+
+.edit-mode-button,
+.edit-mode-menu .edit-mode-option {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  display: flex;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px;
+  padding: 0 !important;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 2px solid rgb(176, 164, 148);
+  border-radius: 50%;
+  background: rgb(197, 187, 172);
+  color: #5b5246e8;
+  cursor: pointer;
+  box-shadow: none;
+  box-sizing: border-box;
+  transform: none !important;
+  transition:
+    filter 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.edit-mode-button svg,
+.edit-mode-option svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.edit-mode-button:hover,
+.edit-mode-option:hover {
+  filter: brightness(1.08);
+  border-color: rgba(143, 134, 118, 0.573);
+  transform: none !important;
+}
+
+.edit-close-icon {
+  display: none;
+  stroke-width: 2.5 !important;
+}
+
+.edit-mode-control.menu-open .edit-pencil-icon {
+  display: none;
+}
+
+.edit-mode-control.menu-open .edit-close-icon {
+  display: block;
+}
+
+/* Muted red X while open */
+
+.edit-mode-control.menu-open .edit-mode-button {
+  border-color: rgba(171, 114, 114, 0.83);
+  background: rgba(204, 162, 162, 0.94);
+  color: #644747;
+}
+
+/* Muted green selected Plant or Furniture button */
+
+.edit-mode-menu .edit-mode-option.selected-mode {
+  border-color: rgba(120, 136, 100, 0.9);
+  background: rgba(177, 190, 152, 0.95);
+  color: #495742;
+  box-shadow: none;
+}
+
+.edit-mode-menu {
+  position: static !important;
+  display: flex !important;
+  width: 0;
+  height: 36px;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row !important;
+  gap: 8px;
+  overflow: hidden;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  opacity: 0;
+  pointer-events: none;
+  box-sizing: border-box;
+  transition:
+    width 0.22s ease,
+    opacity 0.15s ease;
+}
+
+.edit-mode-menu.open {
+  width: 80px;
+  margin: 0;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Calendar bottom-right tab drawer */
+
+.calendar-drawer {
+  position: fixed;
+  right: 30px;
+  bottom: 0;
+  z-index: 5500;
+  transform: translateY(calc(100% - 34px));
+  transition: transform 0.22s ease;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.calendar-drawer.open {
+  transform: translateY(0);
+}
+
+.calendar-button {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  left: auto !important;
+  display: block;
+  width: 112px;
+  height: 34px;
+  margin: 0 0 0 auto;
+  padding: 0;
+  border: 3px solid rgba(175, 163, 141, 0.74);
+  border-bottom: none;
+  border-radius: 14px 14px 0 0;
+  background: rgba(214, 207, 191, 0.84);
+  color: #333;
+  font-size: 14px;
+  box-sizing: border-box;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.28);
+  transform: none !important;
+}
+
+.calendar-wrapper {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  left: auto !important;
+  display: block !important;
+  transform: none !important;
+}
+
+.calendar-panel {
+  border-radius: 18px 0 18px 18px;
+  overflow: hidden;
+}
+
+/* Bottom tabs */
+
+.legend-drawer {
+  bottom: 0;
+  left: 30px;
+}
+
+/* Hold Shift to temporarily reveal stickers behind edit controls */
+
+body.reveal-stickers .edit-mode-control,
+body.reveal-stickers .sticker-edit-controls,
+body.reveal-stickers .edit-slider-panel,
+body.reveal-stickers .sticker-select-popup,
+body.reveal-stickers .trash-drawer {
+  display: none !important;
+}
+
+/* Temporarily hide dashboard controls while dragging a sticker */
+
+body.sticker-dragging .edit-mode-control,
+body.sticker-dragging .sticker-edit-controls,
+body.sticker-dragging .edit-slider-panel,
+body.sticker-dragging .sticker-select-popup,
+body.sticker-dragging .calendar-drawer,
+body.sticker-dragging .legend-drawer,
+body.sticker-dragging .trash-panel {
+  display: none !important;
+}
+
+/* Dashboard tabs disappear during edit mode or while a card is open */
+
+body.dashboard-edit-mode .calendar-drawer,
+body.dashboard-edit-mode .legend-drawer,
+body.dashboard-card-open .calendar-drawer,
+body.dashboard-card-open .legend-drawer {
+  display: none !important;
+}
+
+body.dashboard-card-open .edit-mode-control,
+body.dashboard-card-open .room-view-switcher {
+  display: none !important;
+}
+
+/* Make Calendar and Legend tabs identical */
+
+.calendar-button,
+.legend-tab {
+  width: max-content;
+  min-width: 0;
+  height: 34px;
+  padding: 0 14px;
+  white-space: nowrap;
+  border: 2px solid rgb(176, 164, 148);
+  border-bottom: none;
+  border-radius: 14px 14px 0 0;
+  background: rgb(209, 201, 189);
+  color: #333;
+  cursor: pointer;
+  font-family: "Nunito", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  box-sizing: border-box;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.28);
+  transition: filter 0.15s ease;
+}
+
+.calendar-button:hover,
+.legend-tab:hover {
+  filter: brightness(1.08);
+}
+
+/* ===== ROOM VIEW SWITCHER ===== */
+
+.room-view-switcher {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  z-index: 5600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 5px;
+  border: 2px solid rgba(176, 164, 148, 0.58);
+  border-radius: 16px;
+  background: rgba(232, 224, 212, 0.46);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transform: translateX(-50%);
+}
+
+.room-view-button {
+  position: relative;
+  display: flex;
+  width: 40px;
+  height: 34px;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(176, 164, 148, 0.72);
+  border-radius: 11px;
+  background: rgba(224, 216, 202, 0.76);
+  color: #413c36;
+  cursor: pointer;
+  font-family: "Nunito", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+  transition: transform 0.15s ease, filter 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.room-view-button:hover {
+  filter: brightness(1.07);
+  transform: translateY(-1px);
+}
+
+.room-view-button.active-room {
+  background: rgba(177, 196, 159, 0.82);
+  border-color: rgba(120, 145, 100, 0.82);
+  color: #405039;
+}
+
+.room-due-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: none;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #a85f72;
+  border-radius: 999px;
+  background: #d88ea0;
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.room-due-badge.has-items {
+  display: flex;
+}
+
+.room-view-button:not(.active-room) .room-due-badge {
+  opacity: 0.78;
+}
+
+/* ===== IPHONE ROTATED LANDSCAPE VIEW ===== */
+
+@media (hover: none) and (pointer: coarse) and (orientation: portrait) {
+  .room-container {
+    position: fixed;
+    top: 50dvh;
+    left: 50dvw;
+    width: 100dvh;
+    height: 100dvw;
+    overflow: hidden;
+    transform: translate(-50%, -50%) rotate(90deg);
+    transform-origin: center center;
+  }
+
+  .room-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* Keep all plant and furniture stickers visible but non-clickable */
+  .plant-sticker {
+    pointer-events: none !important;
+  }
+
+  /* Small, non-clickable plant dots */
+  .plant-marker {
+    width: 14px !important;
+    height: 14px !important;
+    min-width: 14px !important;
+    min-height: 14px !important;
+    padding: 0 !important;
+    box-sizing: border-box;
+    border-radius: 50% !important;
+    appearance: none;
+    pointer-events: none !important;
+  }
+
+  /* Hide all dashboard controls on iPhone */
+  .calendar-button,
+  .calendar-wrapper,
+  .edit-mode-button,
+  .edit-mode-menu,
+  .edit-slider-panel,
+  .sticker-edit-controls,
+  .sticker-select-popup,
+  .legend-drawer,
+  .trash-drawer {
+    display: none !important;
+  }
+}
+
+/* ===== MOBILE / SMALL SCREEN STYLES ===== */
+
+@media (max-width: 700px) {
+  .modal-card {
+    grid-template-columns: 1fr;
+  }
+
+  .zoom-view {
+    min-height: 260px;
+  }
+}
+
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js">
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js">
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js">
+</script>
+</head>
+<body>
+<div id="loginScreen" class="login-screen">
+<div class="login-card">
+  <h2>New House Plant Dashboard</h2>
+  <p>Please sign in to sync your plant tracker.</p>
+  <input id="loginEmail" type="email" placeholder="Email">
+  <input id="loginPassword" type="password" placeholder="Password">
+  <button onclick="signInWithEmail()">Sign in</button>
+</div>
+</div>
+
+<!-- ===== CALENDAR BUTTON ===== -->
+
+<!-- Edit-mode pill control -->
+
+<div class="edit-mode-control" id="editModeControl">
+  <button
+    type="button"
+    class="edit-mode-button"
+    id="editModeButton"
+    aria-label="Edit dashboard"
+    aria-expanded="false"
+    onclick="toggleEditModeMenu(event)"
+  >
+    <svg class="edit-pencil-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 20h4L19 9l-4-4L4 16v4z"></path>
+      <path d="M13.5 6.5l4 4"></path>
+    </svg>
+
+    <svg class="edit-close-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M6 6L18 18"></path>
+      <path d="M18 6L6 18"></path>
+    </svg>
+  </button>
+
+  <div id="editModeMenu" class="edit-mode-menu">
+    <button
+      type="button"
+      id="editPlantsButton"
+      class="edit-mode-option"
+      aria-label="Edit plants"
+      onclick="startEditMode('plants', event)"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 21V10"></path>
+        <path d="M12 14c-4 0-7-2.3-7-6 4 0 7 2.3 7 6z"></path>
+        <path d="M12 11c4 0 7-2.3 7-6-4 0-7 2.3-7 6z"></path>
+        <path d="M7 21h10"></path>
+      </svg>
+    </button>
+
+    <button
+      type="button"
+      id="editDecorButton"
+      class="edit-mode-option"
+      aria-label="Edit furniture"
+      onclick="startEditMode('decor', event)"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M6 11V7a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v4"></path>
+        <path d="M5 10a2 2 0 0 0-2 2v5h18v-5a2 2 0 0 0-2-2"></path>
+        <path d="M6 17v3M18 17v3"></path>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<div id="editSliderPanel" class="edit-slider-panel">
+  <span id="editSliderLabel">Size</span>
+  <input id="editSlider" type="range" min="20" max="300" value="120">
+</div>
+
+<!-- ===== CALENDAR DRAWER + PANELS ===== -->
+
+<div class="calendar-drawer" id="calendarDrawer">
+  <button
+    type="button"
+    class="calendar-button"
+    onclick="toggleCalendar(event)"
+  >
+    Calendar
+  </button>
+
+  <div class="calendar-wrapper" id="calendarWrapper">
+
+<!-- Plants due/watered side panel -->
+
+<div class="due-panel" id="duePanel">
+  <div class="due-panel-header">
+    <h3 id="duePanelTitle">Plants Due</h3>
+    <button class="due-close-button" onclick="closeDuePanel()">×</button>
+  </div>
+  <div id="duePlantList">
+  </div>
+</div>
+
+<!-- Main calendar panel -->
+
+<div class="calendar-panel" id="calendarPanel">
+  <div class="calendar-main">
+    <div class="calendar-header">
+      <h3 id="calendarMonthTitle">Calendar</h3>
+    </div>
+    <div class="calendar-weekdays">
+      <div>Sun</div>
+      <div>Mon</div>
+      <div>Tue</div>
+      <div>Wed</div>
+      <div>Thu</div>
+      <div>Fri</div>
+      <div>Sat</div>
+    </div>
+    <div class="calendar-grid" id="calendarGrid">
+    </div>
+  </div>
+
+  <!-- Upcoming checks section -->
+
+    <div class="upcoming-panel">
+      <h3>Upcoming Checks</h3>
+      <div id="upcomingList">
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== ROOM IMAGE + LEGEND ===== -->
+
+<div class="room-container" id="roomContainer">
+<img src="livingroom.jpg?v=room5" class="room-image">
+
+<!-- Color legend -->
+
+<div class="legend-drawer" id="legendDrawer">
+  <button class="legend-tab" onclick="toggleLegend()">Legend</button>
+  <div class="legend">
+    <div class="legend-row">
+      <span class="legend-dot blue">
+      </span>
+      Watered today
+    </div>
+    <div class="legend-row">
+      <span class="legend-dot green">
+      </span>
+      Not due yet
+    </div>
+    <div class="legend-row">
+      <span class="legend-dot yellow">
+      </span>
+      Due in 2 days
+    </div>
+    <div class="legend-row">
+      <span class="legend-dot orange">
+      </span>
+      Due tomorrow
+    </div>
+    <div class="legend-row">
+      <span class="legend-dot red">
+      </span>
+      Due today
+    </div>
+    <div class="legend-row">
+      <span class="legend-dot darkred">
+      </span>
+      Overdue
+    </div>
+    <div class="legend-row">
+      <span class="legend-dot fertilizer-ring-legend">
+      </span>
+      Fertilizer due
+    </div>
+  </div>
+</div>
+
+<!-- Room view switcher -->
+
+<div class="room-view-switcher" id="roomViewSwitcher" aria-label="Room views">
+  <button type="button" class="room-view-button active-room" data-room="1" onclick="switchRoom(1, event)">
+    1
+    <span class="room-due-badge" id="roomDueBadge1">0</span>
+  </button>
+  <button type="button" class="room-view-button" data-room="2" onclick="switchRoom(2, event)">
+    2
+    <span class="room-due-badge" id="roomDueBadge2">0</span>
+  </button>
+  <button type="button" class="room-view-button" data-room="3" onclick="switchRoom(3, event)">
+    3
+    <span class="room-due-badge" id="roomDueBadge3">0</span>
+  </button>
+  <button type="button" class="room-view-button" data-room="4" onclick="switchRoom(4, event)">
+    4
+    <span class="room-due-badge" id="roomDueBadge4">0</span>
+  </button>
+</div>
+
+<!-- Edit-mode trashcan and stored sticker drawer -->
+
+<div class="trash-drawer" id="trashDrawer">
+  <div class="trash-panel" id="trashPanel">
+    <div id="trashList">
+    </div>
+  </div>
+  <button
+    type="button"
+    class="trash-button"
+    id="trashButton"
+    aria-label="Open trash"
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 7h16">
+      </path>
+      <path d="M9 7V4h6v3">
+      </path>
+      <path d="M6.5 7l1 14h9l1-14">
+      </path>
+      <path d="M10 11v6M14 11v6">
+      </path>
+    </svg>
+    <span class="trash-count" id="trashCount">0</span>
+  </button>
+</div>
+</div>
+
+<!-- ===== PLANT CARD MODAL ===== -->
+
+<div class="modal-background" id="plantModal">
+<div class="modal-card plant-card-redesign">
+  <div class="plant-card-header">
+    <h2 id="plantName">
+    </h2>
+    <div id="plantStatus" class="status-pill plant-card-status">
+    </div>
+  </div>
+  <div class="plant-card-main">
+
+    <!-- Plant photo -->
+
+    <div class="plant-photo-panel">
+      <div class="zoom-view" id="zoomView">
+      </div>
+      <div class="photo-info-row">
+        <div class="photo-info-box">
+          <strong>Pot size:</strong>
+          <span
+            id="plantSize"
+            class="plant-card-editable-value"
+            onclick="startPotSizeEdit(event)"
+          >
+          </span>
+        </div>
+        <div class="photo-info-box repot-info-box">
+          <strong>Repotted:</strong>
+          <span
+            id="lastRepot"
+            class="plant-card-editable-value"
+            onclick="startLastRepotEdit(event)"
+          >
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Watering and fertilizer -->
+
+    <div class="plant-care-area">
+      <div class="care-details-banner">Care Details</div>
+      <div class="plant-care-column">
+        <section class="care-panel water-care-panel">
+          <button
+            type="button"
+            class="care-action-button watered-button"
+            onclick="markWateredToday()"
+          >
+            <svg class="care-action-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2.5S5.5 10 5.5 15a6.5 6.5 0 0 0 13 0C18.5 10 12 2.5 12 2.5z"/>
+              <path class="icon-highlight" d="M9 15.2c0 1.7 1.3 3 3 3"/>
+            </svg>
+            <span class="care-action-label">Water</span>
+          </button>
+          <div class="care-details">
+            <div class="care-row care-date-row">
+              <button
+                type="button"
+                id="lastWateredSelectButton"
+                class="date-edit-trigger care-row-icon"
+                aria-label="Select last watered date"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 4h14a2 2 0 0 1 2 2v14H3V6a2 2 0 0 1 2-2z"/>
+                  <path d="M7 2v4M17 2v4M3 9h18"/>
+                </svg>
+              </button>
+              <strong>Watered:</strong>
+              <span id="lastWatered">
+              </span>
+            </div>
+            <div class="care-row care-interval-row">
+              <button
+                type="button"
+                id="waterIntervalSelectButton"
+                class="date-edit-trigger care-row-icon"
+                aria-label="Select watering interval"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9">
+                  </circle>
+                  <path d="M12 7v5l3 2">
+                  </path>
+                </svg>
+              </button>
+              <strong>Interval:</strong>
+              <span id="intervalDays">
+              </span>
+            </div>
+          </div>
+        </section>
+        <section class="care-panel fertilizer-care-panel" id="fertilizerGroup">
+          <button
+            type="button"
+            class="care-action-button fertilized-button"
+            onclick="markFertilizedToday()"
+          >
+            <svg class="care-action-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 21V10"/>
+              <path d="M12 14c-4 0-7-2.3-7-6 4 0 7 2.3 7 6z"/>
+              <path d="M12 11c4 0 7-2.3 7-6-4 0-7 2.3-7 6z"/>
+              <path d="M7 21h10"/>
+            </svg>
+            <span class="care-action-label">Fertilize</span>
+          </button>
+          <div class="care-details">
+            <div class="care-row care-date-row">
+              <button
+                type="button"
+                id="lastFertilizedSelectButton"
+                class="date-edit-trigger care-row-icon"
+                aria-label="Select last fertilized date"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 4h14a2 2 0 0 1 2 2v14H3V6a2 2 0 0 1 2-2z"/>
+                  <path d="M7 2v4M17 2v4M3 9h18"/>
+                </svg>
+              </button>
+              <strong>Fertilized:</strong>
+              <span id="lastFertilized">
+              </span>
+            </div>
+            <div class="care-row care-interval-row">
+              <button
+                type="button"
+                id="fertilizerIntervalSelectButton"
+                class="date-edit-trigger care-row-icon"
+                aria-label="Select fertilizer interval"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9">
+                  </circle>
+                  <path d="M12 7v5l3 2">
+                  </path>
+                </svg>
+              </button>
+              <strong>Interval:</strong>
+              <span id="fertilizerStatus">
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Bottom controls -->
+
+        <div class="button-row plant-card-footer">
+          <button class="close-button" onclick="closeModal()">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 6l12 12M18 6 6 18"/>
+            </svg>
+            <span>Close</span>
+          </button>
+          <button class="delay-button" type="button">
+            <span
+              class="delay-half delay-back-half"
+              onclick="moveActivePlantBackOneDay(event)"
+            >
+              <span>-1</span>
+            </span>
+            <span
+              class="delay-half delay-forward-half"
+              onclick="delayActivePlantOneDay(event)"
+            >
+              <span>+1</span>
+            </span>
+          </button>
+          <button
+            type="button"
+            id="plantCardEditButton"
+            class="plant-card-edit-button"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 20h4l11-11-4-4L4 16v4zm12.5-16.5 4 4 1.2-1.2a1.4 1.4 0 0 0 0-2l-2-2a1.4 1.4 0 0 0-2 0l-1.2 1.2z"/>
+            </svg>
+            <span>Edit</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCI1YVaNYdQTqRfXhE4SlWmEwzmX6yG-Pk",
+  authDomain: "plant-dashboard2026.firebaseapp.com",
+  databaseURL: "https://plant-dashboard2026-default-rtdb.firebaseio.com",
+  projectId: "plant-dashboard2026",
+  storageBucket: "plant-dashboard2026.firebasestorage.app",
+  messagingSenderId: "564906366406",
+  appId: "1:564906366406:web:df477a9b5b0200412acec7"
+};
+
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const auth = firebase.auth();
+let firebaseDataLoaded = false;
+const allowedEmail = "faithyyrain@gmail.com".toLowerCase().trim();
+
+function plantKey(plant) {
+  return `${plant.name}-${plant.x}-${plant.y}`
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+const newHouseLayoutPath = "newHouseLayout";
+
+function savePlantToFirebase(plant) {
+  if (!firebaseDataLoaded) {
+    return;
+  }
+
+  const key = plantKey(plant);
+
+  // Keep plant-care data shared with the original dashboard.
+  // Do NOT write new-house positions into the old dashboard's plant layout fields.
+  if (!plant.decorative) {
+    database.ref("plants/" + key).update({
+      lastWatered: plant.lastWatered || null,
+      lastFertilized: plant.lastFertilized || null,
+      delayUntil: plant.delayUntil || null,
+      lastRepot: plant.lastRepot || null,
+      size: plant.size || null,
+      intervalDays: plant.intervalDays || null,
+      fertilizerIntervalDays: plant.fertilizerIntervalDays ?? null,
+      fertilizerBufferDays: plant.fertilizerBufferDays ?? null,
+      intervalAdjustedToday: plant.intervalAdjustedToday || null,
+      previousLastWatered: plant.previousLastWatered || null,
+      previousLastFertilized: plant.previousLastFertilized || null,
+      previousLastRepot: plant.previousLastRepot || null
+    });
+  }
+
+  // New-house room assignment and sticker layout live in their own Firebase branch.
+  database.ref(`${newHouseLayoutPath}/${key}`).set({
+    room: plant.room ?? 1,
+    stickerX: plant.stickerX ?? plant.x ?? 50,
+    stickerY: plant.stickerY ?? plant.y ?? 50,
+    markerOffsetX: plant.markerOffsetX ?? 0,
+    markerOffsetY: plant.markerOffsetY ?? 0,
+    stickerWidth: plant.stickerWidth ?? null,
+    stickerRotation: plant.stickerRotation ?? 0,
+    stickerScaleX: plant.stickerScaleX ?? 1,
+    stickerScaleY: plant.stickerScaleY ?? 1,
+    zOffset: plant.zOffset ?? 0,
+    inTrash: plant.inTrash === true
+  });
+}
+
+function isAllowedUser(user) {
+  return user &&
+    user.email &&
+    user.email.toLowerCase().trim() === allowedEmail;
+}
+
+function signInWithEmail() {
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value;
+
+  auth.signInWithEmailAndPassword(email, password)
+    .then(result => {
+    const user = result.user;
+
+    if (!isAllowedUser(user)) {
+      alert("This email is not authorized to use this plant dashboard.");
+      auth.signOut();
+      return;
+    }
+
+    document.getElementById("loginScreen").style.display = "none";
+
+    if (!firebaseDataLoaded) {
+      loadPlantsFromFirebase();
+    }
+  })
+    .catch(error => {
+    console.error("Email sign-in error:", error);
+    alert("Sign-in failed. Please check your email and password.");
+  });
+}
+
+function checkAuthStatus() {
+  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .then(() => {
+    auth.onAuthStateChanged(user => {
+      if (isAllowedUser(user)) {
+        document.getElementById("loginScreen").style.display = "none";
+
+        if (!firebaseDataLoaded) {
+          loadPlantsFromFirebase();
+        }
+      } else {
+        document.getElementById("loginScreen").style.display = "flex";
+      }
+    });
+  })
+    .catch(error => {
+    console.error("Auth persistence error:", error);
+    alert("Sign-in failed. Please try again.");
+  });
+}
+
+function loadPlantsFromFirebase() {
+  if (firebaseDataLoaded) {
+    return;
+  }
+
+  Promise.all([
+    database.ref("plants").once("value"),
+    database.ref(newHouseLayoutPath).once("value")
+  ]).then(([careSnapshot, layoutSnapshot]) => {
+    const savedPlants = careSnapshot.val() || {};
+    const savedLayout = layoutSnapshot.val() || {};
+
+    plants.forEach(plant => {
+      const key = plantKey(plant);
+      const savedPlant = savedPlants[key];
+
+      if (!savedPlant) {
+        return;
+      }
+
+      if (plant.lastWatered !== null && savedPlant.lastWatered !== undefined) {
+        plant.lastWatered = savedPlant.lastWatered;
+      }
+
+      if (plant.lastFertilized !== null && savedPlant.lastFertilized !== undefined) {
+        plant.lastFertilized = savedPlant.lastFertilized;
+      }
+
+      [
+        "delayUntil",
+        "lastRepot",
+        "size",
+        "fertilizerIntervalDays",
+        "fertilizerBufferDays",
+        "intervalAdjustedToday",
+        "previousLastWatered",
+        "previousLastFertilized",
+        "previousLastRepot"
+      ].forEach(field => {
+        if (savedPlant[field] !== undefined) {
+          plant[field] = savedPlant[field];
+        }
+      });
+
+      if (
+        plant.intervalDays !== null &&
+        savedPlant.intervalDays !== undefined &&
+        savedPlant.intervalDays !== null
+      ) {
+        plant.intervalDays = savedPlant.intervalDays;
+      }
+    });
+
+    dashboardItems.forEach(item => {
+      const key = plantKey(item);
+      const layout = savedLayout[key];
+
+      if (!layout) {
+        return;
+      }
+
+      [
+        "room",
+        "stickerX",
+        "stickerY",
+        "markerOffsetX",
+        "markerOffsetY",
+        "stickerWidth",
+        "stickerRotation",
+        "stickerScaleX",
+        "stickerScaleY",
+        "zOffset"
+      ].forEach(field => {
+        if (layout[field] !== undefined && layout[field] !== null) {
+          item[field] = layout[field];
+        }
+      });
+
+      if (layout.inTrash !== undefined) {
+        item.inTrash = layout.inTrash === true;
+      }
+    });
+
+    firebaseDataLoaded = true;
+
+    applyEditModeView();
+    updateTrashDrawerVisibility();
+    updateMarkerColors();
+    positionMarkers();
+    renderCalendar();
+    renderUpcomingChecks();
+    updateRoomDueBadges();
+  }).catch(error => {
+    console.error("Firebase load error:", error);
+  });
+}
+
+// ===== PLANT DATA =====
+
+  const plantPhotoVersion = "20260713-1";
+
+function versionedPlantPhoto(path) {
+  if (!path) return "livingroom.jpg?v=room5";
+  return `${path}${path.includes("?") ? "&" : "?"}v=${plantPhotoVersion}`;
+}
+
+const defaultFertilizerIntervalDays = 21;
+const defaultFertilizerBufferDays = 1;
+
+const plants = [
+  {
+    name: "Alocasia Corms",
+    size: "3 inch pot",
+    x: 22.0,
+    y: 22.0,
+    image: "plant-photos/alocasia-corms.jpeg",
+    sticker: "plant-stickers/alocasia-corms.png",
+    stickerWidth: 60,
+    lastWatered: "2026-07-15",
+    intervalDays: 3,
+    lastFertilized: "2026-07-15",
+    lastRepot: "2026-07-15"
+  },
+  {
+    name: "Alocasia Frydek",
+    size: "4 inch pot",
+    x: 31.7,
+    y: 55.2,
+    image: "plant-photos/frydek.jpeg",
+    sticker: "plant-stickers/frydek.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-07",
+    intervalDays: 6,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2026-04-12"
+  },
+  {
+    name: "Alocasia Polly",
+    size: "4 inch pot",
+    x: 34.6,
+    y: 55.3,
+    image: "plant-photos/polly.jpeg",
+    sticker: "plant-stickers/polly.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-07",
+    intervalDays: 6,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2026-04-12"
+  },
+  {
+    name: "Begonia Polka Dot",
+    size: "4 inch pot",
+    x: 53.9,
+    y: 60.6,
+    image: "plant-photos/begonia.jpeg",
+    sticker: "plant-stickers/begonia.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-07",
+    intervalDays: 6,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2026-02-24"
+  },
+  {
+    name: "Cathlea Zebrina",
+    size: "3 inch pot",
+    x: 34.7,
+    y: 68.1,
+    image: "plant-photos/cathlea.jpeg",
+    sticker: "plant-stickers/cathlea.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-10",
+    intervalDays: 5,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2026-04-12"
+  },
+  {
+    name: "Ficus Shivereana",
+    size: "4 inch pot",
+    x: 25.4,
+    y: 60.7,
+    image: "plant-photos/ficus.jpeg",
+    sticker: "plant-stickers/ficus.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-08",
+    intervalDays: 8,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2025-12-11"
+  },
+  {
+    name: "Grace's Philodendron Micans",
+    size: "6 inch pot",
+    x: 88.9,
+    y: 87.2,
+    image: "plant-photos/graces-plant.jpeg",
+    lastWatered: "2026-05-06",
+    intervalDays: 11,
+    lastFertilized: "2026-05-06",
+    lastRepot: "2026-05-02"
+  },
+  {
+    name: "Moms Mixed Pothos & Philodendron",
+    size: "6 inch pot",
+    x: 78.3,
+    y: 60.7,
+    image: "plant-photos/moms-plant.jpeg",
+    sticker: "plant-stickers/moms-plant.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-10",
+    intervalDays: 9,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2026-02-12"
+  },
+  {
+    name: "Monstera Albo Cutting",
+    size: "3 inch pot",
+    x: 28.9,
+    y: 27.6,
+    image: "plant-photos/albo-cutting4.jpeg",
+    sticker: "plant-stickers/albo-cutting4.png",
+    stickerWidth: 60,
+    lastWatered: "2026-06-19",
+    intervalDays: 4,
+    lastFertilized: "2026-06-19",
+    lastRepot: "2026-06-19"
+  },
+  {
+    name: "Monstera Albo Cutting",
+    size: "3 inch pot",
+    x: 38.9,
+    y: 27.6,
+    image: "plant-photos/albo-cutting5.jpeg",
+    sticker: "plant-stickers/albo-cutting5.png",
+    stickerWidth: 60,
+    lastWatered: "2026-06-19",
+    intervalDays: 4,
+    lastFertilized: "2026-06-19",
+    lastRepot: "2026-06-19"
+  },
+  {
+    name: "Monstera Albo Cutting",
+    size: "4 inch pot",
+    x: 44.7,
+    y: 44.0,
+    image: "plant-photos/albo-cutting2.jpeg",
+    sticker: "plant-stickers/albo-cutting2.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-11",
+    intervalDays: 5,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2026-05-11"
+  },
+  {
+    name: "Monstera Albo Cutting",
+    size: "4 inch pot",
+    x: 47.4,
+    y: 47.0,
+    image: "plant-photos/albo-cutting3.jpeg",
+    sticker: "plant-stickers/albo-cutting3.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-11",
+    intervalDays: 5,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2026-05-11"
+  },
+  {
+    name: "Monstera Albo Cutting",
+    size: "4 inch pot",
+    x: 59.7,
+    y: 60.6,
+    image: "plant-photos/albo-cutting.jpeg",
+    sticker: "plant-stickers/albo-cutting.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-08",
+    intervalDays: 8,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2026-03-12"
+  },
+  {
+    name: "Monstera Deliciosa",
+    size: "8 inch pot",
+    x: 33.8,
+    y: 38.7,
+    image: "plant-photos/top-monstera.jpeg",
+    sticker: "plant-stickers/top-monstera.png",
+    stickerWidth: 100,
+    lastWatered: "2026-05-10",
+    intervalDays: 10,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2026-04-14"
+  },
+  {
+    name: "Monstera Deliciosa",
+    size: "8 inch pot",
+    x: 28.5,
+    y: 60.0,
+    image: "plant-photos/right-monstera.jpeg",
+    sticker: "plant-stickers/right-monstera.png",
+    stickerWidth: 90,
+    lastWatered: "2026-05-06",
+    intervalDays: 9,
+    lastFertilized: "2026-04-26",
+    lastRepot: "2026-01-26"
+  },
+  {
+    name: "Monstera Deliciosa",
+    size: "8 inch pot",
+    x: 19.8,
+    y: 60.0,
+    image: "plant-photos/left-monstera.jpeg",
+    sticker: "plant-stickers/left-monstera.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-06",
+    intervalDays: 9,
+    lastFertilized: "2026-04-26",
+    lastRepot: "2026-04-12"
+  },
+  {
+    name: "Monstera Deliciosa",
+    size: "12 inch pot",
+    x: 89.0,
+    y: 76.8,
+    image: "plant-photos/large-monstera.jpeg",
+    sticker: "plant-stickers/large-monstera.png",
+    stickerWidth: 60,
+    lastWatered: "2026-04-25",
+    intervalDays: 14,
+    lastFertilized: "2026-04-25",
+    lastRepot: "2025-12-12"
+  },
+  {
+    name: "Monstera Deliciosa",
+    size: "6 inch pot",
+    x: 28.9,
+    y: 27.6,
+    image: "plant-photos/monstera-caleigh.jpeg",
+    sticker: "plant-stickers/monstera-caleigh.png",
+    stickerWidth: 60,
+    lastWatered: "2026-06-19",
+    intervalDays: 8,
+    lastFertilized: "2026-06-19",
+    lastRepot: "2026-06-19"
+  },
+  {
+    name: "Monstera Mint",
+    size: "3 inch pot",
+    x: 90.0,
+    y: 42.7,
+    image: "plant-photos/mint2.jpeg",
+    sticker: "plant-stickers/mint2.png",
+    stickerWidth: 60,
+    lastWatered: "2026-07-23",
+    intervalDays: 4,
+    lastFertilized: "2026-07-23",
+    lastRepot: "2026-07-23"
+  },
+  {
+    name: "Monstera Mint & Yellow Marilyn",
+    size: "3 inch pot",
+    x: 37.8,
+    y: 36.0,
+    image: "plant-photos/marilyn-mint.jpeg",
+    sticker: "plant-stickers/marilyn-mint.png",
+    stickerWidth: 60,
+    lastWatered: "2026-07-23",
+    intervalDays: 3,
+    lastFertilized: "2026-07-23",
+    lastRepot: "2026-07-23"
+  },
+  {
+    name: "Monstera Thai Constellation",
+    size: "10 inch pot",
+    x: 46.3,
+    y: 35.9,
+    image: "plant-photos/thai-con.jpeg",
+    sticker: "plant-stickers/thai-con.png",
+    stickerWidth: 110,
+    lastWatered: "2026-04-30",
+    intervalDays: 11,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2026-04-14"
+  },
+  {
+    name: "Monstera Thai Constellation",
+    size: "6 inch pot",
+    x: 40.5,
+    y: 35.3,
+    image: "plant-photos/baby-thai-con.jpeg",
+    sticker: "plant-stickers/baby-thai-con.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-10",
+    intervalDays: 9,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2026-04-14"
+  },
+  {
+    name: "Philodendron Brasil",
+    size: "6 inch pot",
+    x: 85.5,
+    y: 38.2,
+    image: "plant-photos/brasil.jpeg",
+    sticker: "plant-stickers/brasil.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-10",
+    intervalDays: 9,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2026-03-12"
+  },
+  {
+    name: "Philodendron Caramel Marble",
+    size: "3 inch pot",
+    x: 17.9,
+    y: 42.7,
+    image: "plant-photos/caramel-marble.jpeg",
+    sticker: "plant-stickers/caramel-marble.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-10",
+    intervalDays: 5,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2026-04-24"
+  },
+  {
+    name: "Philodendron Heartleaf",
+    size: "3 inch pot",
+    x: 23.2,
+    y: 28.0,
+    image: "plant-photos/heartleaf.jpeg",
+    sticker: "plant-stickers/heartleaf.png",
+    stickerWidth: 60,
+    lastWatered: "2026-07-23",
+    intervalDays: 7,
+    lastFertilized: "2026-07-23",
+    lastRepot: "2026-07-23"
+  },
+  {
+    name: "Philodendron Lemon Lime",
+    size: "4 inch pot",
+    x: 66.0,
+    y: 37.5,
+    image: "plant-photos/lemon-lime.jpeg",
+    sticker: "plant-stickers/lemon-lime.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-08",
+    intervalDays: 8,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2026-03-12"
+  },
+  {
+    name: "Philodendron Micans",
+    size: "4 inch pot",
+    x: 72.0,
+    y: 52.7,
+    image: "plant-photos/micans.jpeg",
+    sticker: "plant-stickers/micans.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-10",
+    intervalDays: 9,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2026-03-12"
+  },
+  {
+    name: "Philodendron Pink Princess",
+    size: "6 inch pot",
+    x: 44.9,
+    y: 83.9,
+    image: "plant-photos/pp1.jpeg",
+    sticker: "plant-stickers/pp1.png",
+    stickerWidth: 60,
+    lastWatered: "2026-04-30",
+    intervalDays: 9,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2026-04-24"
+  },
+  {
+    name: "Philodendron Pink Princess",
+    size: "4 inch pot",
+    x: 45.9,
+    y: 65.0,
+    image: "plant-photos/pp2.jpeg",
+    sticker: "plant-stickers/pp2.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-06",
+    intervalDays: 8,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2026-04-24"
+  },
+   {
+    name: "Philodendron Pink Princess Propagation",
+    size: null,
+    x: 65.0,
+    y: 60.7,
+    image: "plant-photos/pp-prop.jpeg",
+    sticker: "plant-stickers/pp-prop.png",
+    stickerWidth: 60,
+    lastWatered: "2026-07-26",
+    intervalDays: 7,
+    lastFertilized: null,
+    lastRepot: null
+  }, 
+  {
+    name: "Philodendron Prince of Orange",
+    size: "3 inch pot",
+    x: 22.9,
+    y: 42.7,
+    image: "plant-photos/orange-prince2.jpeg",
+    sticker: "plant-stickers/orange-prince2.png",
+    stickerWidth: 60,
+    lastWatered: "2026-06-19",
+    intervalDays: 5,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2025-12-18"
+  },
+  {
+    name: "Philodendron Prince of Orange",
+    size: "6 inch pot",
+    x: 20.3,
+    y: 42.7,
+    image: "plant-photos/orange-prince1.jpeg",
+    sticker: "plant-stickers/orange-prince1.png",
+    stickerWidth: 60,
+    lastWatered: "2026-06-19",
+    intervalDays: 8,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2025-12-18"
+  },
+  {
+    name: "Philodendron Prince of Orange",
+    size: "3 inch pot",
+    x: 28.9,
+    y: 27.6,
+    image: "plant-photos/orange-prince3.jpeg",
+    sticker: "plant-stickers/orange-prince3.png",
+    stickerWidth: 60,
+    lastWatered: "2026-06-19",
+    intervalDays: 5,
+    lastFertilized: "2026-06-19",
+    lastRepot: "2026-06-19"
+  },
+  {
+    name: "Philodendron Ring of Fire",
+    size: "3 inch pot",
+    x: 27.2,
+    y: 42.7,
+    image: "plant-photos/ring-of-fire.jpeg",
+    sticker: "plant-stickers/ring-of-fire.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-10",
+    intervalDays: 5,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2026-01-26"
+  },
+  {
+    name: "Philodendron Silver Sword",
+    size: "3 inch pot",
+    x: 23.0,
+    y: 60.7,
+    image: "plant-photos/silver-sword.jpeg",
+    sticker: "plant-stickers/silver-sword.png",
+    stickerWidth: 60,
+    lastWatered: "2026-07-02",
+    intervalDays: 5,
+    lastFertilized: "2026-07-02",
+    lastRepot: "2026-07-02"
+  },
+  {
+    name: "Philodendron Silver Sword Propagation",
+    size: null,
+    x: 28.0,
+    y: 60.7,
+    image: "plant-photos/silver-sword2.jpeg",
+    sticker: "plant-stickers/silver-sword2.png",
+    stickerWidth: 60,
+    lastWatered: "2026-07-26",
+    intervalDays: 7,
+    lastFertilized: null,
+    lastRepot: null
+  },
+    {
+    name: "Philodendron Heartleaf Propagation",
+    size: null,
+    x: 60.0,
+    y: 60.7,
+    image: "plant-photos/philo-prop.jpeg",
+    sticker: "plant-stickers/philo-prop.png",
+    stickerWidth: 60,
+    lastWatered: "2026-07-26",
+    intervalDays: 7,
+    lastFertilized: null,
+    lastRepot: null
+  },
+  {
+    name: "Philodendron Warscewiczii",
+    size: "3 inch pot",
+    x: 29.6,
+    y: 42.7,
+    image: "plant-photos/philo-wars.jpeg",
+    sticker: "plant-stickers/philo-wars.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-10",
+    intervalDays: 5,
+    lastFertilized: "2026-05-01",
+    lastRepot: "2026-04-24"
+  },
+  {
+    name: "Philodendron White Knight",
+    size: "3 inch pot",
+    x: 45.6,
+    y: 69.1,
+    image: "plant-photos/white-knight.jpeg",
+    sticker: "plant-stickers/white-knight.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-10",
+    intervalDays: 5,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2026-05-10"
+  },
+  {
+    name: "Pothos Marble Queen",
+    size: "4 inch pot",
+    x: 65.7,
+    y: 60.7,
+    image: "plant-photos/marble-queen2.jpeg",
+    sticker: "plant-stickers/marble-queen2.png",
+    stickerWidth: 60,
+    lastWatered: "2026-07-24",
+    intervalDays: 9,
+    lastFertilized: "2026-07-24",
+    lastRepot: "2026-07-24"
+  },
+  {
+    name: "Pothos Marble Queen",
+    size: "4 inch pot",
+    x: 69.7,
+    y: 37.5,
+    image: "plant-photos/marble-queen.jpeg",
+    sticker: "plant-stickers/marble-queen.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-22",
+    intervalDays: 6,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2026-05-22"
+  },
+  {
+    name: "Pothos Marble Queen",
+    size: "4 inch pot",
+    x: 69.7,
+    y: 50.5,
+    image: "plant-photos/marble-queen3.jpeg",
+    sticker: "plant-stickers/marble-queen3.png",
+    stickerWidth: 60,
+    lastWatered: "2026-07-23",
+    intervalDays: 6,
+    lastFertilized: "2026-07-23",
+    lastRepot: "2026-07-23"
+  },
+  {
+    name: "Pothos Marble Queen Propagation",
+    size: null,
+    x: 25.0,
+    y: 42.7,
+    image: "plant-photos/marble-queen-prop.jpeg",
+    sticker: "plant-stickers/marble-queen-prop.png",
+    stickerWidth: 60,
+    lastWatered: "2026-07-26",
+    intervalDays: 7,
+    lastFertilized: null,
+    lastRepot: null
+  },
+  {
+    name: "Pothos Silver Satin",
+    size: "6 inch pot",
+    x: 72.9,
+    y: 37.5,
+    image: "plant-photos/satin.jpeg",
+    sticker: "plant-stickers/satin.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-10",
+    intervalDays: 9,
+    lastFertilized: "2026-04-30",
+    lastRepot: "2026-04-12"
+  },
+  {
+    name: "Tillandsia Harrisii",
+    size: null,
+    x: 16.8,
+    y: 27.5,
+    image: "plant-photos/air-plant.jpeg",
+    sticker: "plant-stickers/air-plant.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-08",
+    intervalDays: 7,
+    lastFertilized: null,
+    fertilizerIntervalDays: null,
+    fertilizerBufferDays: null,
+    lastRepot: null
+  },
+  {
+    name: "Venus Fly Trap",
+    size: "8 inch pot",
+    x: 71.1,
+    y: 61.6,
+    image: "plant-photos/venus.jpeg",
+    sticker: "plant-stickers/venus.png",
+    stickerWidth: 60,
+    lastWatered: "2026-05-07",
+    intervalDays: 7,
+    lastFertilized: null,
+    fertilizerIntervalDays: null,
+    fertilizerBufferDays: null,
+    lastRepot: null
+  },
+
+];
+
+// ===== FURNITURE STICKERS =====
+
+// Add future furniture sticker objects inside this array.
+// Keep `decorative: true` so the existing furniture edit mode handles them.
+const furniture = [
+  /*
+  {
+    name: "Example Furniture",
+    decorative: true,
+    decorLayer: "behind",
+    locked: true,
+    room: 1,
+    x: 50,
+    y: 50,
+    sticker: "furniture-stickers/example.png",
+    stickerX: 50,
+    stickerY: 50,
+    stickerWidth: 180,
+    stickerRotation: 0,
+    stickerScaleX: 1,
+    stickerScaleY: 1
+  }
+  */
+];
+
+plants.forEach(plant => {
+  plant.room = Number(plant.room) || 1;
+});
+
+furniture.forEach(item => {
+  item.decorative = true;
+  item.room = Number(item.room) || 1;
+});
+
+const dashboardItems = [...plants, ...furniture];
+
+checkAuthStatus();
+
+// ===== GLOBAL VARIABLES =====
+
+const roomContainer = document.getElementById("roomContainer");
+const roomImage = document.querySelector(".room-image");
+const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+
+// Replace these image paths with the four new-house room images when you have them.
+// They temporarily use the current living-room image so every view works immediately.
+const roomViews = [
+  { id: 1, image: "livingroom.jpg?v=room5" },
+  { id: 2, image: "livingroom.jpg?v=room5" },
+  { id: 3, image: "livingroom.jpg?v=room5" },
+  { id: 4, image: "livingroom.jpg?v=room5" }
+];
+
+let activeRoom = Number(localStorage.getItem("newHouseActiveRoom")) || 1;
+if (activeRoom < 1 || activeRoom > 4) {
+  activeRoom = 1;
+}
+
+let activePlantIndex = null;
+let plantCardEditMode = false;
+let selectedPlantCardDate = null;
+let reopenCalendarDate = null;
+let selectedDueDate = null;
+let selectedDuePlants = [];
+let selectedCalendarDate = null;
+let editingPlant = null;
+let movingPlant = false;
+let editControls = null;
+let dotMoveReady = false;
+let movingDot = false;
+let ignoreNextMarkerClick = false;
+let moveOffsetX = 0;
+let moveOffsetY = 0;
+let editMode = null;
+let activeSliderControl = null;
+let trashRestorePlant = null;
+let trashRestoreGhost = null;
+let trashRestoreStartX = 0;
+let trashRestoreStartY = 0;
+
+function getTrashedItemsForCurrentMode() {
+  return dashboardItems.filter(plant => {
+    if (!plant.inTrash) {
+      return false;
+    }
+
+    if (editMode === "plants") {
+      return !plant.decorative;
+    }
+
+    if (editMode === "decor") {
+      return plant.decorative;
+    }
+
+    return false;
+  });
+}
+
+function renderTrashDrawer() {
+  const trashDrawer = document.getElementById("trashDrawer");
+  const trashPanel = document.getElementById("trashPanel");
+  const trashList = document.getElementById("trashList");
+  const trashCount = document.getElementById("trashCount");
+
+  if (
+    !trashDrawer ||
+    !trashPanel ||
+    !trashList ||
+    !trashCount
+  ) {
+    return;
+  }
+
+  const trashItems = getTrashedItemsForCurrentMode();
+
+  trashCount.textContent = trashItems.length;
+  trashCount.classList.toggle(
+    "has-items",
+    trashItems.length > 0
+  );
+
+  trashList.innerHTML = "";
+
+  if (trashItems.length === 0) {
+    trashList.innerHTML = `
+    <div class="trash-empty-message">
+      No ${editMode === "decor" ? "furniture" : "plants"} in trash.
+    </div>
+  `;
+
+    return;
+  }
+
+  trashItems.forEach(plant => {
+    const trashItem = document.createElement("div");
+    trashItem.className = "trash-item";
+
+    const stickerImage = document.createElement("img");
+    stickerImage.className = "trash-item-sticker";
+    stickerImage.src = plant.sticker;
+    stickerImage.alt = plant.name;
+    stickerImage.draggable = false;
+    stickerImage.dataset.plantKey = plantKey(plant);
+    stickerImage.addEventListener("mousedown", function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (trashRestoreGhost) {
+        trashRestoreGhost.remove();
+      }
+
+      trashRestorePlant = plant;
+      document.body.classList.add("sticker-dragging");
+      trashRestoreStartX = event.clientX;
+      trashRestoreStartY = event.clientY;
+
+      trashRestoreGhost = document.createElement("img");
+      trashRestoreGhost.className = "trash-restore-ghost";
+      trashRestoreGhost.src = plant.sticker;
+      trashRestoreGhost.alt = "";
+
+      trashRestoreGhost.style.left = event.clientX + "px";
+      trashRestoreGhost.style.top = event.clientY + "px";
+
+      document.body.appendChild(trashRestoreGhost);
+
+      document
+        .getElementById("trashPanel")
+        .classList.remove("open");
+    });
+
+    stickerImage.addEventListener("click", function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+    });
+
+    const stickerName = document.createElement("div");
+    stickerName.className = "trash-item-name";
+    stickerName.textContent = plant.name;
+
+    trashItem.appendChild(stickerImage);
+    trashItem.appendChild(stickerName);
+    trashList.appendChild(trashItem);
+  });
+}
+
+function updateTrashDrawerVisibility() {
+  const trashDrawer = document.getElementById("trashDrawer");
+  const trashPanel = document.getElementById("trashPanel");
+
+  if (!trashDrawer || !trashPanel) {
+    return;
+  }
+
+  const shouldShow =
+    editMode === "plants" ||
+    editMode === "decor";
+
+  trashDrawer.classList.toggle("visible", shouldShow);
+
+  if (!shouldShow) {
+    trashPanel.classList.remove("open");
+  }
+
+  renderTrashDrawer();
+}
+
+document
+  .getElementById("trashButton")
+  .addEventListener("click", function(event) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  const trashPanel =
+    document.getElementById("trashPanel");
+
+  trashPanel.classList.toggle("open");
+  renderTrashDrawer();
+});
+
+function isPointerOverTrash(event) {
+  const trashDrawer =
+    document.getElementById("trashDrawer");
+
+  const trashButton =
+    document.getElementById("trashButton");
+
+  if (
+    !trashDrawer ||
+    !trashButton ||
+    !trashDrawer.classList.contains("visible")
+  ) {
+    return false;
+  }
+
+  const rect = trashButton.getBoundingClientRect();
+  const extraDropSpace = 14;
+
+  return (
+    event.clientX >= rect.left - extraDropSpace &&
+    event.clientX <= rect.right + extraDropSpace &&
+    event.clientY >= rect.top - extraDropSpace &&
+    event.clientY <= rect.bottom + extraDropSpace
+  );
+}
+
+function setTrashDragHighlight(isActive) {
+  const trashDrawer =
+    document.getElementById("trashDrawer");
+
+  if (!trashDrawer) {
+    return;
+  }
+  trashDrawer.classList.toggle(
+    "drag-over",
+    isActive
+  );
+}
+
+function playTrashDropEffect() {
+  const trashDrawer =
+    document.getElementById("trashDrawer");
+
+  if (!trashDrawer) {
+    return;
+  }
+
+  trashDrawer.classList.remove("drop-pulse");
+
+  requestAnimationFrame(() => {
+    trashDrawer.classList.add("drop-pulse");
+  });
+
+  window.setTimeout(() => {
+    trashDrawer.classList.remove("drop-pulse");
+    }, 500);
+}
+
+function moveEditingStickerToTrash() {
+  if (!editingPlant) {
+    return;
+  }
+
+  const trashedPlant = editingPlant;
+
+  trashedPlant.inTrash = true;
+
+  movingPlant = false;
+  movingDot = false;
+  dotMoveReady = false;
+
+  setTrashDragHighlight(false);
+  playTrashDropEffect();
+
+  savePlantToFirebase(trashedPlant);
+
+  stickers.forEach(({ sticker, plant }) => {
+    if (plant === trashedPlant) {
+      sticker.classList.remove("editing-sticker");
+      sticker.style.display = "none";
+      sticker.style.pointerEvents = "none";
+    }
+  });
+
+  markers.forEach(({ marker, plant }) => {
+    if (plant === trashedPlant) {
+      marker.style.display = "none";
+    }
+  });
+
+  editingPlant = null;
+
+  if (editControls) {
+    editControls.style.display = "none";
+  }
+
+  const sliderPanel =
+    document.getElementById("editSliderPanel");
+
+  if (sliderPanel) {
+    sliderPanel.classList.remove("open");
+    sliderPanel.style.display = "none";
+  }
+
+  activeSliderControl = null;
+
+  closeStickerSelectPopup();
+  renderTrashDrawer();
+  applyEditModeView();
+  updateRoomDueBadges();
+  renderCalendar();
+  renderUpcomingChecks();
+}
+
+function updatePlantCardDateSelection() {
+  const selectableButtons = [
+    {
+      id: "lastWateredSelectButton",
+      type: "watered"
+    },
+    {
+      id: "lastFertilizedSelectButton",
+      type: "fertilized"
+    },
+    {
+      id: "waterIntervalSelectButton",
+      type: "waterInterval"
+    },
+    {
+      id: "fertilizerIntervalSelectButton",
+      type: "fertilizerInterval"
+    }
+  ];
+
+  selectableButtons.forEach(selection => {
+    const button = document.getElementById(selection.id);
+
+    if (!button) {
+      return;
+    }
+
+    const isSelected =
+      plantCardEditMode &&
+      selectedPlantCardDate === selection.type;
+
+    button.classList.toggle("date-selected", isSelected);
+
+    const row = button.closest(".care-row");
+
+    if (row) {
+      row.classList.toggle("date-row-selected", isSelected);
+    }
+  });
+
+  const delayButton =
+    document.querySelector(".plant-card-footer .delay-button");
+
+  const buttonRow =
+    document.querySelector(".button-row.plant-card-footer");
+
+  const dateAdjustMode =
+    plantCardEditMode && selectedPlantCardDate !== null;
+
+  if (delayButton) {
+    delayButton.classList.toggle(
+      "date-adjust-mode",
+      dateAdjustMode
+    );
+
+    if (dateAdjustMode) {
+      delayButton.style.display = "inline-grid";
+    }
+  }
+
+  if (buttonRow && dateAdjustMode) {
+    buttonRow.classList.remove("even-buttons");
+  }
+}
+
+function togglePlantCardDateSelection(type, event) {
+  event.stopPropagation();
+
+  if (!plantCardEditMode || activePlantIndex === null) {
+    return;
+  }
+
+  const plant = plants[activePlantIndex];
+
+  if (
+    (
+    type === "fertilized" ||
+    type === "fertilizerInterval"
+    ) &&
+    !hasFertilizerSchedule(plant)
+  ) {
+    return;
+  }
+
+  selectedPlantCardDate =
+    selectedPlantCardDate === type ? null : type;
+
+  openPlantDetails(activePlantIndex);
+  updatePlantCardEditButton();
+}
+
+function updatePlantCardEditButton() {
+  const button = document.getElementById("plantCardEditButton");
+
+  if (!button) {
+    return;
+  }
+
+  const label = button.querySelector("span");
+
+  if (label) {
+    label.textContent = plantCardEditMode ? "Done" : "Edit";
+  }
+
+  button.classList.toggle("card-edit-active", plantCardEditMode);
+  const card = document.querySelector(".modal-card.plant-card-redesign");
+
+  if (card) {
+    card.classList.toggle("card-edit-mode", plantCardEditMode);
+  }
+
+  button.setAttribute(
+    "aria-pressed",
+    plantCardEditMode ? "true" : "false"
+  );
+  updatePlantCardDateSelection();
+}
+
+function exitPlantCardEditMode(saveChanges = true) {
+  if (
+    plantCardEditMode &&
+    saveChanges &&
+    activePlantIndex !== null
+  ) {
+    savePlantToFirebase(plants[activePlantIndex]);
+  }
+
+  plantCardEditMode = false;
+  selectedPlantCardDate = null;
+  updatePlantCardEditButton();
+  updatePlantCardDateSelection();
+}
+
+function refreshPlantCardDataViews() {
+  updateMarkerColors();
+  renderCalendar();
+  renderUpcomingChecks();
+
+  if (activePlantIndex !== null) {
+    openPlantDetails(activePlantIndex);
+    updatePlantCardEditButton();
+  }
+}
+
+function startLastRepotEdit(event) {
+  event.stopPropagation();
+
+  if (!plantCardEditMode || activePlantIndex === null) {
+    return;
+  }
+
+  const display = document.getElementById("lastRepot");
+
+  if (!display || display.querySelector("input")) {
+    return;
+  }
+
+  const plant = plants[activePlantIndex];
+  const originalDate = plant.lastRepot || null;
+
+  const input = document.createElement("input");
+  input.type = "date";
+  input.className = "plant-card-date-input";
+  input.value = originalDate || "";
+
+  display.textContent = "";
+  display.appendChild(input);
+
+  input.focus();
+
+  let finished = false;
+
+  function saveLastRepot() {
+    if (finished) {
+      return;
+    }
+
+    finished = true;
+
+    plant.lastRepot = input.value || null;
+    savePlantToFirebase(plant);
+
+    display.textContent = plant.lastRepot
+      ? formatSlashDate(plant.lastRepot)
+      : "N/A";
+  }
+
+  input.addEventListener("click", function(inputEvent) {
+    inputEvent.stopPropagation();
+  });
+
+  input.addEventListener("change", saveLastRepot);
+  input.addEventListener("blur", saveLastRepot);
+
+  input.addEventListener("keydown", function(keyEvent) {
+    if (keyEvent.key === "Enter") {
+      keyEvent.preventDefault();
+      input.blur();
+    }
+
+    if (keyEvent.key === "Escape") {
+      finished = true;
+      plant.lastRepot = originalDate;
+
+      display.textContent = originalDate
+        ? formatSlashDate(originalDate)
+        : "N/A";
+    }
+  });
+}
+
+function startPotSizeEdit(event) {
+  event.stopPropagation();
+
+  if (!plantCardEditMode || activePlantIndex === null) {
+    return;
+  }
+
+  const display = document.getElementById("plantSize");
+
+  if (!display || display.querySelector("input")) {
+    return;
+  }
+
+  const plant = plants[activePlantIndex];
+  const currentNumber = parseInt(plant.size, 10) || "";
+
+  const input = document.createElement("input");
+  input.type = "number";
+  input.min = "1";
+  input.step = "1";
+  input.inputMode = "numeric";
+  input.className = "plant-card-number-input";
+  input.value = currentNumber;
+
+  display.textContent = "";
+  display.appendChild(input);
+
+  input.focus();
+  input.select();
+
+  let saved = false;
+
+  function savePotSize() {
+    if (saved) {
+      return;
+    }
+
+    saved = true;
+
+    const newSize = parseInt(input.value, 10);
+
+    if (Number.isFinite(newSize) && newSize > 0) {
+      plant.size = `${newSize} inch pot`;
+      savePlantToFirebase(plant);
+    }
+
+    display.textContent = formatPotSize(plant.size);
+  }
+
+  input.addEventListener("click", function(inputEvent) {
+    inputEvent.stopPropagation();
+  });
+
+  input.addEventListener("blur", savePotSize);
+
+  input.addEventListener("keydown", function(keyEvent) {
+    if (keyEvent.key === "Enter") {
+      keyEvent.preventDefault();
+      input.blur();
+    }
+
+    if (keyEvent.key === "Escape") {
+      saved = true;
+      display.textContent = formatPotSize(plant.size);
+    }
+  });
+}
+
+function togglePlantCardEditMode(event) {
+  event.stopPropagation();
+
+  if (plantCardEditMode) {
+    exitPlantCardEditMode(true);
+    return;
+  }
+
+  plantCardEditMode = true;
+  updatePlantCardEditButton();
+}
+
+document
+  .getElementById("plantCardEditButton")
+  .addEventListener("click", togglePlantCardEditMode);
+
+document
+  .getElementById("lastWateredSelectButton")
+  .addEventListener("click", function(event) {
+  togglePlantCardDateSelection("watered", event);
+});
+
+document
+  .getElementById("lastFertilizedSelectButton")
+  .addEventListener("click", function(event) {
+  togglePlantCardDateSelection("fertilized", event);
+});
+
+document
+  .getElementById("waterIntervalSelectButton")
+  .addEventListener("click", function(event) {
+  togglePlantCardDateSelection("waterInterval", event);
+});
+
+document
+  .getElementById("fertilizerIntervalSelectButton")
+  .addEventListener("click", function(event) {
+  togglePlantCardDateSelection("fertilizerInterval", event);
+});
+
+function setEditModeMenuOpen(isOpen) {
+  const editModeButton =
+    document.getElementById("editModeButton");
+
+  const editModeMenu =
+    document.getElementById("editModeMenu");
+
+  const editModeControl =
+    document.getElementById("editModeControl");
+
+  editModeMenu.classList.toggle("open", isOpen);
+  editModeControl.classList.toggle("menu-open", isOpen);
+
+  const pencilShouldBeGreen =
+    isOpen || Boolean(editMode);
+
+  editModeButton.classList.toggle(
+    "edit-mode-active",
+    pencilShouldBeGreen
+  );
+
+  editModeButton.setAttribute(
+    "aria-expanded",
+    isOpen ? "true" : "false"
+  );
+
+  editModeButton.setAttribute(
+    "aria-pressed",
+    pencilShouldBeGreen ? "true" : "false"
+  );
+}
+
+function toggleEditModeMenu(event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  if (editMode) {
+    exitEditMode();
+    return;
+  }
+
+  const editModeMenu =
+    document.getElementById("editModeMenu");
+
+  setEditModeMenuOpen(
+    !editModeMenu.classList.contains("open")
+  );
+}
+
+function startEditMode(mode, event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  editMode = mode;
+
+  const editModeButton =
+    document.getElementById("editModeButton");
+
+  const editPlantsButton =
+    document.getElementById("editPlantsButton");
+
+  const editDecorButton =
+    document.getElementById("editDecorButton");
+
+  setEditModeMenuOpen(true);
+
+  editModeButton.classList.add("edit-mode-active");
+  editModeButton.setAttribute("aria-pressed", "true");
+
+  editPlantsButton.classList.toggle(
+    "selected-mode",
+    mode === "plants"
+  );
+
+  editDecorButton.classList.toggle(
+    "selected-mode",
+    mode === "decor"
+  );
+
+  document.body.classList.add("dashboard-edit-mode");
+
+  if (editControls) {
+    editControls.style.display = "flex";
+  }
+
+  const sliderPanel =
+    document.getElementById("editSliderPanel");
+
+  if (sliderPanel) {
+    sliderPanel.classList.remove("open");
+  }
+
+  activeSliderControl = null;
+
+  const moveDotButton =
+    document.getElementById("moveDotButton");
+
+  if (moveDotButton) {
+    moveDotButton.style.display =
+      editMode === "plants" ? "flex" : "none";
+  }
+
+  applyEditModeView();
+  updateTrashDrawerVisibility();
+}
+
+function exitEditMode() {
+  editMode = null;
+
+  document.body.classList.remove("dashboard-edit-mode");
+
+  if (trashRestoreGhost) {
+    trashRestoreGhost.remove();
+  }
+
+  trashRestorePlant = null;
+  trashRestoreGhost = null;
+  trashRestoreStartX = 0;
+  trashRestoreStartY = 0;
+
+  setTrashDragHighlight(false);
+  setEditModeMenuOpen(false);
+
+  const editModeButton =
+    document.getElementById("editModeButton");
+
+  const editPlantsButton =
+    document.getElementById("editPlantsButton");
+
+  const editDecorButton =
+    document.getElementById("editDecorButton");
+
+  editModeButton.classList.remove("edit-mode-active");
+  editModeButton.setAttribute("aria-pressed", "false");
+
+  editPlantsButton.classList.remove("selected-mode");
+  editDecorButton.classList.remove("selected-mode");
+
+  lockStickerEdits(new Event("click"));
+
+  if (editControls) {
+    editControls.style.display = "none";
+  }
+
+  stickers.forEach(item =>
+    item.sticker.classList.remove("editing-sticker")
+  );
+
+  applyEditModeView();
+  updateTrashDrawerVisibility();
+}
+
+function itemIsInActiveRoom(item) {
+  return (Number(item.room) || 1) === activeRoom;
+}
+
+function applyEditModeView() {
+  stickers.forEach(({ sticker, plant }) => {
+    if (plant.inTrash || !itemIsInActiveRoom(plant)) {
+      sticker.style.display = "none";
+      sticker.style.pointerEvents = "none";
+      sticker.classList.remove("editing-sticker");
+      return;
+    }
+
+    if (editMode === "decor") {
+      if (plant.decorative) {
+        sticker.style.display = "block";
+        sticker.classList.add("decor-editable");
+        sticker.style.pointerEvents = "auto";
+      } else {
+        sticker.style.display = "none";
+        sticker.style.pointerEvents = "none";
+      }
+    } else if (editMode === "plants") {
+      if (plant.decorative) {
+        sticker.style.display = "block";
+        sticker.classList.remove("decor-editable");
+        sticker.style.pointerEvents = "none";
+      } else {
+        sticker.style.display = "block";
+        sticker.style.pointerEvents = "auto";
+      }
+    } else {
+      sticker.style.display = "block";
+
+      if (plant.decorative) {
+        sticker.classList.remove("decor-editable");
+      }
+
+      sticker.style.pointerEvents = "auto";
+    }
+  });
+
+  markers.forEach(({ marker, plant }) => {
+    const shouldHide =
+      plant.inTrash ||
+      !itemIsInActiveRoom(plant) ||
+      editMode === "decor";
+
+    marker.style.display = shouldHide ? "none" : "block";
+  });
+}
+
+function createStickerEditControls() {
+  editControls = document.createElement("div");
+  editControls.className = "sticker-edit-controls";
+
+  editControls.innerHTML = `
+      <button id="moveDotButton" data-tooltip="Move dot">
+        <img src="icons/move-dot.png" alt="Move dot">
+      </button>
+
+      <button id="sizeStickerButton" data-tooltip="Size">
+        <img src="icons/size.png" alt="Size">
+      </button>
+
+      <button id="rotateSliderButton" data-tooltip="Rotate">
+        <img src="icons/rotate.png" alt="Rotate">
+      </button>
+
+      <button id="widthSliderButton" data-tooltip="Width">
+        <img src="icons/width.png" alt="Width">
+      </button>
+
+      <button id="heightSliderButton" data-tooltip="Height">
+        <img src="icons/height.png" alt="Height">
+      </button>
+
+      <button id="moveRoomButton" data-tooltip="Move room" aria-label="Move to another room">
+        <svg viewBox="0 0 24 24" aria-hidden="true" style="width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;">
+          <path d="M4 10.5 12 4l8 6.5"></path>
+          <path d="M6.5 9.5V20h11V9.5"></path>
+          <path d="M10 20v-6h4v6"></path>
+        </svg>
+      </button>
+
+      <button id="sendBackwardStickerButton" data-tooltip="Backward">
+        <img src="icons/backward.png" alt="Backward">
+      </button>
+
+      <button id="bringForwardStickerButton" data-tooltip="Forward">
+        <img src="icons/forward.png" alt="Forward">
+      </button>
+    `;
+
+  document.body.appendChild(editControls);
+
+  const stickerSelectPopup = document.createElement("div");
+  stickerSelectPopup.id = "stickerSelectPopup";
+  stickerSelectPopup.className = "sticker-select-popup";
+  document.body.appendChild(stickerSelectPopup);
+  document.getElementById("moveDotButton").addEventListener("click", startDotMoveMode);
+  document.getElementById("sizeStickerButton").addEventListener("click", openSizeSlider);
+  document.getElementById("rotateSliderButton").addEventListener("click", openRotateSlider);
+  document.getElementById("widthSliderButton").addEventListener("click", openWidthSlider);
+  document.getElementById("heightSliderButton").addEventListener("click", openHeightSlider);
+  document.getElementById("moveRoomButton").addEventListener("click", openMoveRoomMenu);
+  document.getElementById("sendBackwardStickerButton").addEventListener("click", sendStickerBackward);
+  document.getElementById("bringForwardStickerButton").addEventListener("click", bringStickerForward);
+}
+
+function positionEditControlsAbovePlant(plant) {
+  if (!editControls || !plant) return;
+
+  editControls.style.display = "flex";
+
+  const moveDotButton = document.getElementById("moveDotButton");
+
+  if (moveDotButton) {
+    moveDotButton.style.display = editMode === "plants" ? "flex" : "none";
+  }
+}
+
+function isStickerEditableInCurrentMode(plant) {
+  if (!editMode) return false;
+
+  if (editMode === "decor") {
+    return plant.decorative;
+  }
+
+  if (editMode === "plants") {
+    return !plant.decorative;
+  }
+
+  return false;
+}
+
+function clickedVisibleStickerPixel(sticker, plant, event) {
+  if (!sticker.complete || !sticker.naturalWidth || !sticker.naturalHeight) {
+    return true;
+  }
+
+  const rect = sticker.getBoundingClientRect();
+
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+
+  const clickX = event.clientX - centerX;
+  const clickY = event.clientY - centerY;
+
+  const rotation = (plant.stickerRotation || 0) * Math.PI / 180;
+  const scaleX = plant.stickerScaleX || 1;
+  const scaleY = plant.stickerScaleY || 1;
+
+  const unrotatedX = clickX * Math.cos(rotation) + clickY * Math.sin(rotation);
+  const unrotatedY = -clickX * Math.sin(rotation) + clickY * Math.cos(rotation);
+
+  const baseWidth = sticker.offsetWidth;
+  const baseHeight = sticker.offsetHeight;
+
+  const imageX = (unrotatedX / scaleX) + baseWidth / 2;
+  const imageY = (unrotatedY / scaleY) + baseHeight / 2;
+
+  if (
+    imageX < 0 ||
+    imageX > baseWidth ||
+    imageY < 0 ||
+    imageY > baseHeight
+  ) {
+    return false;
+  }
+
+  const canvas = document.createElement("canvas");
+  canvas.width = sticker.naturalWidth;
+  canvas.height = sticker.naturalHeight;
+
+  const context = canvas.getContext("2d");
+  context.drawImage(sticker, 0, 0);
+
+  const sampleX = Math.floor((imageX / baseWidth) * sticker.naturalWidth);
+  const sampleY = Math.floor((imageY / baseHeight) * sticker.naturalHeight);
+
+  const pixel = context.getImageData(sampleX, sampleY, 1, 1).data;
+  const alpha = pixel[3];
+
+  return alpha > 20;
+}
+
+function getStickerCandidatesAtPoint(event) {
+  return stickers.filter(({ sticker, plant }) => {
+    if (!isStickerEditableInCurrentMode(plant)) {
+      return false;
+    }
+
+    if (sticker.style.display === "none") {
+      return false;
+    }
+
+    const rect = sticker.getBoundingClientRect();
+
+    const insideRectangle =
+      event.clientX >= rect.left &&
+      event.clientX <= rect.right &&
+      event.clientY >= rect.top &&
+      event.clientY <= rect.bottom;
+
+    if (!insideRectangle) {
+      return false;
+    }
+
+    return clickedVisibleStickerPixel(sticker, plant, event);
+  });
+}
+
+function closeStickerSelectPopup() {
+  const popup = document.getElementById("stickerSelectPopup");
+
+  if (popup) {
+    popup.classList.remove("open");
+    popup.innerHTML = "";
+  }
+}
+
+function showStickerSelectPopup(event, candidates) {
+  const popup = document.getElementById("stickerSelectPopup");
+
+  if (!popup) return;
+
+  popup.innerHTML = `<div class="sticker-select-popup-title">Select sticker</div>`;
+
+  candidates.forEach(({ plant }) => {
+    const button = document.createElement("button");
+    button.textContent = plant.name;
+
+    button.addEventListener("click", function(popupEvent) {
+      popupEvent.stopPropagation();
+      closeStickerSelectPopup();
+      openStickerEditControls(event, plant);
+    });
+
+    popup.appendChild(button);
+  });
+
+  popup.style.left = event.clientX + 12 + "px";
+  popup.style.top = event.clientY + 12 + "px";
+  popup.classList.add("open");
+}
+
+function openStickerEditControls(event, plant) {
+  if (!editMode) {
+    return;
+  }
+
+  if (editMode === "decor" && !plant.decorative) {
+    return;
+  }
+
+  if (editMode === "plants" && plant.decorative) {
+    return;
+  }
+
+  event.stopPropagation();
+
+  if (plant.decorative) {
+    plant.locked = false;
+  }
+
+  const moveDotButton = document.getElementById("moveDotButton");
+
+  dotMoveReady = false;
+  movingPlant = false;
+  movingDot = false;
+
+  document
+    .querySelectorAll(".sticker-edit-controls button")
+    .forEach(button => {
+      button.classList.remove("active-edit-button");
+    });
+
+  const sliderPanel =
+    document.getElementById("editSliderPanel");
+
+  if (sliderPanel) {
+    sliderPanel.classList.remove("open");
+    sliderPanel.style.display = "none";
+  }
+
+  activeSliderControl = null;
+
+  editingPlant = plant;
+
+  stickers.forEach(item =>
+    item.sticker.classList.remove("editing-sticker")
+  );
+
+  const activeStickerItem = stickers.find(
+    item => item.plant === plant
+  );
+
+  if (activeStickerItem) {
+    activeStickerItem.sticker.classList.add("editing-sticker");
+  }
+
+  editControls.style.display = "flex";
+
+  if (moveDotButton) {
+    moveDotButton.style.display =
+      editMode === "plants" ? "flex" : "none";
+  }
+}
+
+function selectStickerEditButton(buttonId, keepSliderOpen = false) {
+  document
+    .querySelectorAll(".sticker-edit-controls button")
+    .forEach(button => {
+      button.classList.remove("active-edit-button");
+    });
+
+  const selectedButton = document.getElementById(buttonId);
+
+  if (selectedButton) {
+    selectedButton.classList.add("active-edit-button");
+  }
+
+  dotMoveReady = buttonId === "moveDotButton";
+
+  if (!dotMoveReady) {
+    movingDot = false;
+  }
+
+  if (!keepSliderOpen) {
+    const sliderPanel =
+      document.getElementById("editSliderPanel");
+
+    if (sliderPanel) {
+      sliderPanel.classList.remove("open");
+      sliderPanel.style.display = "none";
+    }
+
+    activeSliderControl = null;
+  }
+}
+
+function startDotMoveMode(event) {
+  event.stopPropagation();
+
+  if (!editingPlant) {
+    return;
+  }
+
+  selectStickerEditButton("moveDotButton");
+
+  dotMoveReady = true;
+  movingPlant = false;
+  movingDot = false;
+}
+
+function openStickerSlider(event, controlType) {
+  event.stopPropagation();
+
+  if (!editingPlant) return;
+
+  const buttonIds = {
+    size: "sizeStickerButton",
+    rotate: "rotateSliderButton",
+    width: "widthSliderButton",
+    height: "heightSliderButton"
+  };
+
+  selectStickerEditButton(buttonIds[controlType], true);
+
+  activeSliderControl = controlType;
+
+  const sliderPanel = document.getElementById("editSliderPanel");
+  const sliderLabel = document.getElementById("editSliderLabel");
+  const slider = document.getElementById("editSlider");
+
+  if (controlType === "size") {
+    const currentSize = editingPlant.stickerWidth || 120;
+    const sizeRange = editMode === "plants" ? 90 : 350;
+
+    sliderLabel.textContent = "Size";
+    slider.min = Math.max(1, currentSize - sizeRange);
+    slider.max = currentSize + sizeRange;
+    slider.step = "1";
+    slider.value = currentSize;
+  }
+
+  if (controlType === "rotate") {
+    sliderLabel.textContent = "Rotate";
+    slider.min = "-180";
+    slider.max = "180";
+    slider.step = "1";
+    slider.value = editingPlant.stickerRotation || 0;
+  }
+
+  if (controlType === "width") {
+    sliderLabel.textContent = "Width";
+    slider.min = "0.3";
+    slider.max = "2";
+    slider.step = "0.01";
+    slider.value = editingPlant.stickerScaleX || 1;
+  }
+
+  if (controlType === "height") {
+    sliderLabel.textContent = "Height";
+    slider.min = "0.3";
+    slider.max = "2";
+    slider.step = "0.01";
+    slider.value = editingPlant.stickerScaleY || 1;
+  }
+
+  sliderPanel.classList.add("open");
+  sliderPanel.style.display = "flex";
+}
+
+function openSizeSlider(event) {
+  openStickerSlider(event, "size");
+}
+
+function openRotateSlider(event) {
+  openStickerSlider(event, "rotate");
+}
+
+function openWidthSlider(event) {
+  openStickerSlider(event, "width");
+}
+
+function openHeightSlider(event) {
+  openStickerSlider(event, "height");
+}
+
+function openMoveRoomMenu(event) {
+  event.stopPropagation();
+
+  if (!editingPlant) {
+    return;
+  }
+
+  selectStickerEditButton("moveRoomButton");
+
+  const popup = document.getElementById("stickerSelectPopup");
+  if (!popup) {
+    return;
+  }
+
+  popup.innerHTML = `<div class="sticker-select-popup-title">Move to room</div>`;
+
+  roomViews.forEach(room => {
+    const button = document.createElement("button");
+    button.textContent = `Room ${room.id}${editingPlant.room === room.id ? " ✓" : ""}`;
+
+    button.addEventListener("click", function(popupEvent) {
+      popupEvent.preventDefault();
+      popupEvent.stopPropagation();
+
+      editingPlant.room = room.id;
+      savePlantToFirebase(editingPlant);
+      closeStickerSelectPopup();
+      switchRoom(room.id, popupEvent);
+
+      applyEditModeView();
+      positionMarkers();
+      updateRoomDueBadges();
+      positionEditControlsAbovePlant(editingPlant);
+    });
+
+    popup.appendChild(button);
+  });
+
+  const buttonRect = event.currentTarget.getBoundingClientRect();
+  popup.style.left = Math.min(window.innerWidth - 190, buttonRect.left) + "px";
+  popup.style.top = (buttonRect.bottom + 10) + "px";
+  popup.classList.add("open");
+}
+
+function sendStickerBackward(event) {
+  event.stopPropagation();
+
+  if (!editingPlant) return;
+
+  selectStickerEditButton("sendBackwardStickerButton");
+
+  editingPlant.zOffset = (editingPlant.zOffset || 0) - 20;
+  savePlantToFirebase(editingPlant);
+  positionMarkers();
+}
+
+function bringStickerForward(event) {
+  event.stopPropagation();
+
+  if (!editingPlant) return;
+
+  selectStickerEditButton("bringForwardStickerButton");
+
+  editingPlant.zOffset = (editingPlant.zOffset || 0) + 20;
+  savePlantToFirebase(editingPlant);
+  positionMarkers();
+}
+
+function lockStickerEdits(event) {
+  event.stopPropagation();
+
+  if (editingPlant) {
+    savePlantToFirebase(editingPlant);
+  }
+
+  dotMoveReady = false;
+  movingPlant = false;
+  movingDot = false;
+
+  const dotButton = document.getElementById("moveDotButton");
+  if (dotButton) {
+    dotButton.classList.remove("active-edit-button");
+  }
+
+  stickers.forEach(item => item.sticker.classList.remove("editing-sticker"));
+
+  editingPlant = null;
+
+  if (editControls) {
+    editControls.style.display = "none";
+  }
+
+  const sliderPanel = document.getElementById("editSliderPanel");
+
+  if (sliderPanel) {
+    sliderPanel.classList.remove("open");
+    sliderPanel.style.display = "none";
+  }
+
+  activeSliderControl = null;
+  closeStickerSelectPopup();
+
+}
+
+// ===== DATE + FORMAT HELPERS =====
+
+  function formatDate(dateString) {
+  const date = new Date(dateString + "T00:00:00");
+
+  return date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric"
+  });
+}
+
+function formatPotSize(size) {
+  if (!size || size === "null") {
+    return "N/A";
+  }
+
+  return size.replace(/\s+pot$/i, "");
+}
+
+function formatShortDate(dateString) {
+  const date = new Date(dateString + "T00:00:00");
+
+  return date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric"
+  });
+}
+
+function formatSlashDate(dateString) {
+  const date = new Date(dateString + "T00:00:00");
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+
+  return `${month}/${day}`;
+}
+
+function getTodayString() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function dateToString(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function getBaseNextWaterDate(plant) {
+  if (!plant.lastWatered || !plant.intervalDays) {
+    return null;
+  }
+
+  const wateredDate = new Date(plant.lastWatered + "T00:00:00");
+  const nextWaterDate = new Date(wateredDate);
+
+  nextWaterDate.setDate(wateredDate.getDate() + plant.intervalDays);
+  nextWaterDate.setHours(0, 0, 0, 0);
+
+  return nextWaterDate;
+}
+
+function getEffectiveNextWaterDate(plant) {
+  const baseNextWaterDate = getBaseNextWaterDate(plant);
+
+  if (!baseNextWaterDate) {
+    return null;
+  }
+
+  if (plant.delayUntil) {
+    const adjustedDate = new Date(plant.delayUntil + "T00:00:00");
+    adjustedDate.setHours(0, 0, 0, 0);
+    return adjustedDate;
+  }
+
+  return baseNextWaterDate;
+}
+
+function getPlantsDueOnDate(dateString) {
+  const targetDate = new Date(dateString + "T00:00:00");
+  targetDate.setHours(0, 0, 0, 0);
+
+  const todayString = getTodayString();
+
+  return plants.filter(plant => {
+    if (
+      plant.decorative ||
+      plant.inTrash ||
+      !plant.lastWatered ||
+      !plant.intervalDays
+    ) {
+      return false;
+    }
+
+    const nextWaterDate = getEffectiveNextWaterDate(plant);
+
+    if (!nextWaterDate) {
+      return false;
+    }
+
+    /*
+    Today should include anything due today
+    OR already overdue and still unwatered.
+    */
+    if (dateString === todayString) {
+      return nextWaterDate <= targetDate;
+    }
+
+    const predictedDate = new Date(nextWaterDate);
+
+    while (predictedDate <= targetDate) {
+      if (dateToString(predictedDate) === dateString) {
+        return true;
+      }
+
+      predictedDate.setDate(
+        predictedDate.getDate() + plant.intervalDays
+      );
+    }
+
+    return false;
+  });
+}
+
+function getPlantsWateredOnDate(dateString) {
+  return plants.filter(plant =>
+    !plant.decorative &&
+    !plant.inTrash &&
+    plant.lastWatered === dateString
+  );
+}
+
+function getOrdinalSuffix(day) {
+  if (day >= 11 && day <= 13) {
+    return "th";
+  }
+
+  const lastDigit = day % 10;
+
+  if (lastDigit === 1) return "st";
+  if (lastDigit === 2) return "nd";
+  if (lastDigit === 3) return "rd";
+
+  return "th";
+}
+
+function formatDuePanelTitle(dateString) {
+  if (dateString === getTodayString()) {
+    return "Plants Due Today";
+  }
+
+  const date = new Date(dateString + "T00:00:00");
+  const month = date.toLocaleDateString("en-US", { month: "long" });
+  const day = date.getDate();
+  const suffix = getOrdinalSuffix(day);
+
+  return `Plants Due ${month} ${day}${suffix}`;
+}
+
+function formatWateredPanelTitle(dateString) {
+  if (dateString === getTodayString()) {
+    return "Plants Watered Today";
+  }
+
+  const date = new Date(dateString + "T00:00:00");
+  const month = date.toLocaleDateString("en-US", { month: "long" });
+  const day = date.getDate();
+  const suffix = getOrdinalSuffix(day);
+
+  return `Plants Watered ${month} ${day}${suffix}`;
+}
+
+// ===== WATERING STATUS LOGIC =====
+
+  function getPlantStatus(plant) {
+  if (!plant.lastWatered || !plant.intervalDays) {
+    return {
+      color: "blue",
+      label: "No watering schedule",
+      nextCheck: "N/A"
+    };
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const wateredDate = new Date(plant.lastWatered + "T00:00:00");
+  wateredDate.setHours(0, 0, 0, 0);
+
+  const nextWaterDate = getEffectiveNextWaterDate(plant);
+
+  const msPerDay = 1000 * 60 * 60 * 24;
+  const daysUntilWater = Math.round((nextWaterDate - today) / msPerDay);
+
+  const wateredToday = wateredDate.getTime() === today.getTime();
+
+  if (wateredToday) {
+    return {
+      color: "blue",
+      label: "Watered today",
+      nextCheck: formatShortDate(nextWaterDate.toISOString().split("T")[0])
+    };
+  }
+
+  if (daysUntilWater > 2) {
+    return {
+      color: "green",
+      label: `${daysUntilWater} days until next check`,
+      nextCheck: formatShortDate(nextWaterDate.toISOString().split("T")[0])
+    };
+  }
+
+  if (daysUntilWater === 2) {
+    return {
+      color: "yellow",
+      label: "Due in 2 days",
+      nextCheck: formatShortDate(nextWaterDate.toISOString().split("T")[0])
+    };
+  }
+
+  if (daysUntilWater === 1) {
+    return {
+      color: "orange",
+      label: "Due tomorrow",
+      nextCheck: formatShortDate(nextWaterDate.toISOString().split("T")[0])
+    };
+  }
+
+  if (daysUntilWater === 0) {
+    return {
+      color: "red",
+      label: "Due today",
+      nextCheck: formatShortDate(nextWaterDate.toISOString().split("T")[0])
+    };
+  }
+
+  return {
+    color: "darkred",
+    label: `${Math.abs(daysUntilWater)} day(s) overdue`,
+    nextCheck: formatShortDate(nextWaterDate.toISOString().split("T")[0])
+  };
+}
+
+// ===== FERTILIZER STATUS LOGIC =====
+
+  function hasFertilizerSchedule(plant) {
+  return plant.lastFertilized;
+}
+
+function getFertilizerStatus(lastFertilized, fertilizerIntervalDays, fertilizerBeforeBufferDays = 0) {
+  if (!lastFertilized || !fertilizerIntervalDays) {
+    return {
+      due: false,
+      readySoon: false,
+      label: "No fertilizer schedule",
+      nextFertilizer: "N/A"
+    };
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const fertilizedDate = new Date(lastFertilized + "T00:00:00");
+  const nextFertilizerDate = new Date(fertilizedDate);
+
+  nextFertilizerDate.setDate(fertilizedDate.getDate() + fertilizerIntervalDays);
+  nextFertilizerDate.setHours(0, 0, 0, 0);
+
+  const msPerDay = 1000 * 60 * 60 * 24;
+  const daysUntilFertilizer = Math.round((nextFertilizerDate - today) / msPerDay);
+
+  if (daysUntilFertilizer > fertilizerBeforeBufferDays) {
+    return {
+      due: false,
+      readySoon: false,
+      label: `${daysUntilFertilizer} days left`,
+      nextFertilizer: formatDate(nextFertilizerDate.toISOString().split("T")[0])
+    };
+  }
+
+  if (daysUntilFertilizer > 0) {
+    return {
+      due: false,
+      readySoon: true,
+      label: `Ready to line up with watering (${daysUntilFertilizer} day(s) early)`,
+      nextFertilizer: formatDate(nextFertilizerDate.toISOString().split("T")[0])
+    };
+  }
+
+  if (daysUntilFertilizer === 0) {
+    return {
+      due: true,
+      readySoon: true,
+      label: "Fertilizer due today",
+      nextFertilizer: formatDate(nextFertilizerDate.toISOString().split("T")[0])
+    };
+  }
+
+  return {
+    due: true,
+    readySoon: true,
+    label: `${Math.abs(daysUntilFertilizer)} day(s) overdue for fertilizer`,
+    nextFertilizer: formatDate(nextFertilizerDate.toISOString().split("T")[0])
+  };
+}
+
+function shouldShowFertilizerRing(plant) {
+  const waterStatus = getPlantStatus(plant);
+  const fertilizerStatus = getFertilizerStatus(
+    plant.lastFertilized,
+    plant.fertilizerIntervalDays ?? defaultFertilizerIntervalDays,
+    plant.fertilizerBufferDays ?? defaultFertilizerBufferDays
+  );
+
+  const wateringWindow = ["orange", "red", "darkred", "blue"].includes(waterStatus.color);
+
+  return fertilizerStatus.due || (wateringWindow && fertilizerStatus.readySoon);
+}
+
+function shouldShowCalendarFertilizerRing(plant, dateString) {
+  if (!plant.lastFertilized) {
+    return false;
+  }
+
+  const targetDate = new Date(dateString + "T00:00:00");
+  targetDate.setHours(0, 0, 0, 0);
+
+  const fertilizedDate = new Date(plant.lastFertilized + "T00:00:00");
+  fertilizedDate.setHours(0, 0, 0, 0);
+
+  const idealFertilizerDate = new Date(fertilizedDate);
+  idealFertilizerDate.setDate(fertilizedDate.getDate() + (plant.fertilizerIntervalDays ?? defaultFertilizerIntervalDays));
+  idealFertilizerDate.setHours(0, 0, 0, 0);
+
+  const beforeBufferDays = plant.fertilizerBufferDays ?? defaultFertilizerBufferDays;
+
+  const bufferStartDate = new Date(idealFertilizerDate);
+  bufferStartDate.setDate(idealFertilizerDate.getDate() - beforeBufferDays);
+
+  return targetDate >= bufferStartDate;
+}
+
+// ===== PLANT DOT / MARKER FUNCTIONS =====
+
+  const markers = [];
+const stickers = [];
+
+function createMarkers() {
+  dashboardItems.forEach((plant) => {
+
+    if (plant.sticker) {
+      const sticker = document.createElement("img");
+
+      sticker.className = "plant-sticker";
+      if (plant.locked) {
+        sticker.classList.add("locked-sticker");
+      }
+
+      if (plant.decorative) {
+        sticker.classList.add("decor-sticker");
+      }
+
+      sticker.src = plant.sticker;
+      sticker.alt = plant.name;
+      sticker.draggable = false;
+      sticker.addEventListener("click", function(event) {
+        if (!editMode) {
+          return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const candidates = getStickerCandidatesAtPoint(event);
+
+        if (candidates.length <= 1) {
+          openStickerEditControls(event, plant);
+          return;
+        }
+
+        showStickerSelectPopup(event, candidates);
+      });
+
+      sticker.addEventListener("mousedown", function(event) {
+        if (!editMode) {
+          return;
+        }
+
+        if (editingPlant !== plant) {
+          openStickerEditControls(event, plant);
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const metrics = getImageMetrics();
+
+        const stickerX = plant.stickerX ?? plant.x;
+        const stickerY = plant.stickerY ?? plant.y;
+
+        const plantPixelX = metrics.offsetX + (stickerX / 100) * metrics.displayedWidth;
+        const plantPixelY = metrics.offsetY + (stickerY / 100) * metrics.displayedHeight;
+
+        moveOffsetX = event.clientX - plantPixelX;
+        moveOffsetY = event.clientY - plantPixelY;
+
+        movingPlant = true;
+        document.body.classList.add("sticker-dragging");
+      });
+
+      roomContainer.appendChild(sticker);
+
+      stickers.push({
+        sticker,
+        plant
+      });
+    }
+
+    if (plant.decorative) {
+      return;
+    }
+
+    const status = getPlantStatus(plant);
+
+    const marker = document.createElement("button");
+    marker.className = `plant-marker ${status.color}`;
+
+    if (shouldShowFertilizerRing(plant)) {
+      marker.classList.add("fertilizer-ring");
+    }
+
+    marker.addEventListener("mousedown", function(event) {
+      if (!dotMoveReady || editingPlant !== plant) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      moveOffsetX = 0;
+      moveOffsetY = 0;
+
+      movingDot = true;
+
+      if (editControls) {
+        editControls.style.display = "none";
+      }
+    });
+
+    marker.addEventListener("click", function(event) {
+      if (isIOS) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+
+      if (movingPlant || movingDot || ignoreNextMarkerClick) {
+        event.preventDefault();
+        event.stopPropagation();
+        ignoreNextMarkerClick = false;
+        return;
+      }
+
+      const plantIndex = plants.indexOf(plant);
+      if (plantIndex >= 0) {
+        openPlantDetails(plantIndex);
+      }
+    });
+
+    roomContainer.appendChild(marker);
+
+    markers.push({
+      marker,
+      plant
+    });
+  });
+
+  positionMarkers();
+  applyEditModeView();
+  updateTrashDrawerVisibility();
+}
+
+// ===== IMAGE POSITIONING FUNCTIONS =====
+
+  function getImageMetrics() {
+  const roomImage = document.querySelector(".room-image");
+  const containerRect = roomContainer.getBoundingClientRect();
+
+  const imageWidth = roomImage.naturalWidth;
+  const imageHeight = roomImage.naturalHeight;
+
+  const containerWidth = isIOS ? roomContainer.clientWidth : containerRect.width;
+  const containerHeight = isIOS ? roomContainer.clientHeight : containerRect.height;
+
+  const scale = Math.max(
+    containerWidth / imageWidth,
+    containerHeight / imageHeight
+  );
+
+  const displayedWidth = imageWidth * scale;
+  const displayedHeight = imageHeight * scale;
+
+  const offsetX = (containerWidth - displayedWidth) / 2;
+  const offsetY = (containerHeight - displayedHeight) / 2;
+
+  return {
+    containerRect,
+    displayedWidth,
+    displayedHeight,
+    offsetX,
+    offsetY
+  };
+}
+
+function positionMarkers() {
+  const metrics = getImageMetrics();
+
+  markers.forEach(({ marker, plant }) => {
+    const markerOffsetX = plant.markerOffsetX ?? 0;
+    const markerOffsetY = plant.markerOffsetY ?? 0;
+
+    const markerX = (plant.stickerX ?? plant.x) + markerOffsetX;
+    const markerY = (plant.stickerY ?? plant.y) + markerOffsetY;
+
+    const x = metrics.offsetX + (markerX / 100) * metrics.displayedWidth;
+    const y = metrics.offsetY + (markerY / 100) * metrics.displayedHeight;
+
+    marker.style.left = x + "px";
+    marker.style.top = y + "px";
+    marker.style.zIndex = 2000;
+  });
+
+  stickers.forEach(({ sticker, plant }) => {
+    const stickerX = plant.stickerX ?? plant.x;
+    const stickerY = plant.stickerY ?? plant.y;
+    const stickerWidth = plant.stickerWidth || 120;
+    const stickerRotation = plant.stickerRotation || 0;
+    const stickerScaleX = plant.stickerScaleX || 1;
+    const stickerScaleY = plant.stickerScaleY || 1;
+
+    const x = metrics.offsetX + (stickerX / 100) * metrics.displayedWidth;
+    const y = metrics.offsetY + (stickerY / 100) * metrics.displayedHeight;
+
+    sticker.style.left = x + "px";
+    sticker.style.top = y + "px";
+    sticker.style.width = (stickerWidth / 1000) * metrics.displayedWidth + "px";
+    sticker.style.opacity = plant.opacity ?? 1;
+    sticker.style.mixBlendMode = plant.blendMode || "normal";
+
+    const zOffset = plant.zOffset || 0;
+    let stickerZ;
+
+    if (plant.decorative && plant.decorLayer === "behind") {
+      stickerZ = 50 + zOffset;
+    } else if (plant.decorative && plant.decorLayer === "front") {
+      stickerZ = 1500 + zOffset;
+    } else {
+      stickerZ = 100 + Math.round(stickerY * 10) + zOffset;
+    }
+
+    sticker.style.zIndex = Math.max(1, stickerZ);
+    sticker.style.transform = `translate(-50%, -50%) rotate(${stickerRotation}deg) scale(${stickerScaleX}, ${stickerScaleY})`;
+  });
+
+  positionCalendar();
+}
+
+function positionCalendar() {
+  const calendarDrawer =
+    document.getElementById("calendarDrawer");
+
+  if (!calendarDrawer) {
+    return;
+  }
+
+  if (isIOS) {
+    calendarDrawer.style.display = "none";
+    calendarDrawer.classList.remove("open");
+  } else {
+    calendarDrawer.style.display = "";
+  }
+}
+
+function updateMarkerColors() {
+  markers.forEach(({ marker, plant }) => {
+    const status = getPlantStatus(plant);
+
+    marker.classList.remove("blue", "green", "yellow", "orange", "red", "darkred", "fertilizer-ring");
+    marker.classList.add(status.color);
+
+    if (shouldShowFertilizerRing(plant)) {
+      marker.classList.add("fertilizer-ring");
+    }
+  });
+
+  updateRoomDueBadges();
+}
+
+// ===== PLANT CARD FUNCTIONS =====
+
+function hideDashboardOverlays() {
+  document.body.classList.add("dashboard-card-open");
+}
+
+function showDashboardOverlays() {
+  document.body.classList.remove("dashboard-card-open");
+}
+
+function openPlantDetails(index) {
+  const plantModal = document.getElementById("plantModal");
+
+  const openingFreshCard =
+    activePlantIndex !== index ||
+    plantModal.style.display !== "flex";
+
+  if (openingFreshCard) {
+    exitPlantCardEditMode(false);
+  }
+
+  activePlantIndex = index;
+  hideDashboardOverlays();
+
+  const plant = plants[index];
+  const status = getPlantStatus(plant);
+  const todayString = getTodayString();
+
+  document.getElementById("plantName").textContent = plant.name;
+  document.getElementById("plantSize").textContent = formatPotSize(plant.size);
+  document.getElementById("lastRepot").textContent = plant.lastRepot ? formatSlashDate(plant.lastRepot) : "N/A";
+
+  document.getElementById("lastWatered").textContent = plant.lastWatered ? formatShortDate(plant.lastWatered) : "N/A";
+  document.getElementById("intervalDays").textContent = plant.intervalDays ? `${plant.intervalDays} days` : "N/A";
+
+  const fertilizerStatus = getFertilizerStatus(
+    plant.lastFertilized,
+    plant.fertilizerIntervalDays ?? defaultFertilizerIntervalDays,
+    plant.fertilizerBufferDays ?? defaultFertilizerBufferDays
+  );
+
+  const fertilizerGroup = document.getElementById("fertilizerGroup");
+
+  if (hasFertilizerSchedule(plant)) {
+    document.getElementById("lastFertilized").textContent = formatShortDate(plant.lastFertilized);
+    const fertilizerIntervalDays =
+      plant.fertilizerIntervalDays ?? defaultFertilizerIntervalDays;
+
+    document.getElementById("fertilizerStatus").textContent =
+      `${fertilizerIntervalDays} Days`;
+
+    fertilizerGroup.style.display = "grid";
+  } else {
+    fertilizerGroup.style.display = "none";
+  }
+
+  const plantStatus = document.getElementById("plantStatus");
+  plantStatus.textContent = status.label;
+  plantStatus.className = `status-pill plant-card-status status-${status.color}`;
+
+  const zoomView = document.getElementById("zoomView");
+
+  if (plant.image && !isIOS) {
+    zoomView.style.backgroundImage =
+      `url("${versionedPlantPhoto(plant.image)}")`;
+
+    zoomView.style.backgroundSize = "cover";
+    zoomView.style.backgroundPosition = "center";
+  } else {
+    zoomView.style.backgroundImage =
+      `url("livingroom.jpg?v=room5")`;
+
+    zoomView.style.backgroundSize = "300%";
+    zoomView.style.backgroundPosition =
+      `${plant.x}% ${plant.y}%`;
+  }
+
+  const wateredButton = document.querySelector(".watered-button");
+  const wateredButtonLabel =
+    wateredButton.querySelector(".care-action-label");
+
+  if (plant.lastWatered === todayString) {
+    wateredButtonLabel.textContent = "Watered!";
+    wateredButton.classList.add("undo-watered");
+  } else {
+    wateredButtonLabel.textContent = "Water";
+    wateredButton.classList.remove("undo-watered");
+  }
+
+  const buttonRow = document.querySelector(".button-row");
+  const delayButton = document.querySelector(".delay-button");
+
+  if (!plant.lastWatered || !plant.intervalDays || plant.lastWatered === todayString) {
+    delayButton.style.display = "none";
+    buttonRow.classList.add("even-buttons");
+    delayButton.innerHTML = `
+        <span class="delay-half delay-back-half" onclick="moveActivePlantBackOneDay(event)"><span>-1</span></span>
+        <span class="delay-half delay-forward-half" onclick="delayActivePlantOneDay(event)"><span>+1</span></span>
+      `;
+  } else {
+    delayButton.style.display = "inline-grid";
+    buttonRow.classList.remove("even-buttons");
+    delayButton.innerHTML = `
+        <span class="delay-half delay-back-half" onclick="moveActivePlantBackOneDay(event)"><span>-1</span></span>
+        <span class="delay-half delay-forward-half" onclick="delayActivePlantOneDay(event)"><span>+1</span></span>
+      `;
+    const nextWaterDate = getEffectiveNextWaterDate(plant);
+    const baseNextWaterDate = getBaseNextWaterDate(plant);
+
+    if (plant.delayUntil && plant.delayUntil > todayString && nextWaterDate && baseNextWaterDate) {
+      const nextTime = nextWaterDate.getTime();
+      const baseTime = baseNextWaterDate.getTime();
+
+      if (nextTime < baseTime) {
+        delayButton.querySelector(".delay-back-half").classList.add("delay-half-active");
+      }
+
+      if (nextTime > baseTime) {
+        delayButton.querySelector(".delay-forward-half").classList.add("delay-half-active");
+      }
+    }
+  }
+
+  const fertilizedButton =
+    document.querySelector(".fertilized-button");
+
+  const fertilizedButtonLabel =
+    fertilizedButton.querySelector(".care-action-label");
+
+  if (hasFertilizerSchedule(plant)) {
+    fertilizedButton.style.display = "flex";
+
+    if (plant.lastFertilized === todayString) {
+      fertilizedButtonLabel.textContent = "Fertilized!";
+      fertilizedButton.classList.add("undo-fertilized");
+    } else {
+      fertilizedButtonLabel.textContent = "Fertilize";
+      fertilizedButton.classList.remove("undo-fertilized");
+    }
+  } else {
+    fertilizedButton.style.display = "none";
+  }
+
+  document.getElementById("plantModal").style.display = "flex";
+}
+
+// ===== WATER + FERTILIZER BUTTON LOGIC =====
+
+  function adjustSelectedPlantCardDate(numberOfDays) {
+  if (
+    !plantCardEditMode ||
+    !selectedPlantCardDate ||
+    activePlantIndex === null
+  ) {
+    return false;
+  }
+
+  const plant = plants[activePlantIndex];
+  if (selectedPlantCardDate === "waterInterval") {
+    const currentInterval = plant.intervalDays;
+
+    if (!currentInterval) {
+      return true;
+    }
+
+    const newInterval = Math.max(
+      1,
+      currentInterval + numberOfDays
+    );
+
+    plant.intervalDays = newInterval;
+    plant.delayUntil = null;
+    plant.intervalAdjustedToday = null;
+
+    savePlantToFirebase(plant);
+    refreshPlantCardDataViews();
+
+    return true;
+  }
+
+  if (selectedPlantCardDate === "fertilizerInterval") {
+    const currentInterval =
+      plant.fertilizerIntervalDays ??
+      defaultFertilizerIntervalDays;
+
+    plant.fertilizerIntervalDays = Math.max(
+      1,
+      currentInterval + numberOfDays
+    );
+
+    savePlantToFirebase(plant);
+    refreshPlantCardDataViews();
+
+    return true;
+  }
+
+  const fieldName =
+    selectedPlantCardDate === "watered"
+    ? "lastWatered"
+    : "lastFertilized";
+
+  const currentDateString = plant[fieldName];
+
+  if (!currentDateString) {
+    return true;
+  }
+
+  const adjustedDate =
+    new Date(currentDateString + "T00:00:00");
+
+  adjustedDate.setDate(
+    adjustedDate.getDate() + numberOfDays
+  );
+
+  plant[fieldName] = dateToString(adjustedDate);
+
+  if (fieldName === "lastWatered") {
+    plant.delayUntil = null;
+    plant.intervalAdjustedToday = null;
+  }
+
+  savePlantToFirebase(plant);
+  refreshPlantCardDataViews();
+
+  return true;
+}
+
+function moveActivePlantBackOneDay(event) {
+  event.stopPropagation();
+
+  if (adjustSelectedPlantCardDate(-1)) {
+    return;
+  }
+
+  if (activePlantIndex === null) {
+    return;
+  }
+
+  const plant = plants[activePlantIndex];
+
+  if (!plant.intervalDays || plant.intervalDays <= 1) {
+    return;
+  }
+
+  plant.intervalDays = plant.intervalDays - 1;
+  plant.intervalAdjustedToday = getTodayString();
+  plant.delayUntil = null;
+
+  savePlantToFirebase(plant);
+
+  updateMarkerColors();
+  renderCalendar();
+  renderUpcomingChecks();
+  openPlantDetails(activePlantIndex);
+}
+
+function delayActivePlantOneDay(event) {
+  event.stopPropagation();
+
+  if (adjustSelectedPlantCardDate(1)) {
+    return;
+  }
+
+  if (activePlantIndex === null) {
+    return;
+  }
+
+  const plant = plants[activePlantIndex];
+
+  if (!plant.intervalDays) {
+    return;
+  }
+
+  plant.intervalDays = plant.intervalDays + 1;
+  plant.delayUntil = null;
+
+  savePlantToFirebase(plant);
+
+  updateMarkerColors();
+  renderCalendar();
+  renderUpcomingChecks();
+  openPlantDetails(activePlantIndex);
+}
+
+function toggleDelayWateringOneDayForPlant(plant, dateString) {
+
+  const clickedDate = new Date(dateString + "T00:00:00");
+  clickedDate.setHours(0, 0, 0, 0);
+
+  const delayedDate = new Date(clickedDate);
+  delayedDate.setDate(clickedDate.getDate() + 1);
+
+  const delayedDateString = dateToString(delayedDate);
+
+  if (plant.delayUntil === delayedDateString) {
+    plant.delayUntil = null;
+    savePlantToFirebase(plant);
+    return;
+  }
+
+  plant.delayUntil = delayedDateString;
+
+  savePlantToFirebase(plant);
+}
+
+function moveWateringBackOneDayForPlant(plant, dateString) {
+  if (!plant.intervalDays || plant.intervalDays <= 1) {
+    return;
+  }
+
+  plant.intervalDays = plant.intervalDays - 1;
+  plant.delayUntil = null;
+
+  savePlantToFirebase(plant);
+}
+
+function toggleWateredForPlant(plant) {
+  const today = getTodayString();
+
+  if (plant.lastWatered === today) {
+    if (plant.previousLastWatered) {
+      plant.lastWatered = plant.previousLastWatered;
+      plant.previousLastWatered = null;
+    } else {
+      plant.lastWatered = null;
+    }
+  } else {
+    plant.previousLastWatered = plant.lastWatered || null;
+    plant.lastWatered = today;
+    plant.delayUntil = null;
+    plant.intervalAdjustedToday = null;
+  }
+
+  savePlantToFirebase(plant);
+}
+
+function toggleFertilizedForPlant(plant) {
+  const today = getTodayString();
+
+  if (plant.lastFertilized === today) {
+    if (plant.previousLastFertilized) {
+      plant.lastFertilized = plant.previousLastFertilized;
+      plant.previousLastFertilized = null;
+    } else {
+      plant.lastFertilized = null;
+    }
+  } else {
+    plant.previousLastFertilized = plant.lastFertilized || null;
+    plant.lastFertilized = today;
+  }
+
+  savePlantToFirebase(plant);
+}
+
+function refreshCalendarViews() {
+  const duePanel = document.getElementById("duePanel");
+  const savedScrollTop = duePanel.scrollTop;
+
+  updateMarkerColors();
+  renderCalendar();
+  renderUpcomingChecks();
+
+  if (selectedDueDate) {
+    openDuePanel(selectedDueDate);
+    duePanel.scrollTop = savedScrollTop;
+  }
+}
+
+function markWateredToday() {
+  if (activePlantIndex === null) {
+    return;
+  }
+
+  const plant = plants[activePlantIndex];
+
+  toggleWateredForPlant(plant);
+  updateMarkerColors();
+  renderCalendar();
+  renderUpcomingChecks();
+  openPlantDetails(activePlantIndex);
+}
+
+function markFertilizedToday() {
+  if (activePlantIndex === null) {
+    return;
+  }
+
+  const plant = plants[activePlantIndex];
+
+  toggleFertilizedForPlant(plant);
+  updateMarkerColors();
+  renderCalendar();
+  renderUpcomingChecks();
+  openPlantDetails(activePlantIndex);
+}
+
+function closeModal() {
+  exitPlantCardEditMode(true);
+
+  document.getElementById("plantModal").style.display = "none";
+  showDashboardOverlays();
+
+  if (reopenCalendarDate) {
+    const calendarDrawer =
+      document.getElementById("calendarDrawer");
+
+    calendarDrawer.classList.add("open");
+
+    renderCalendar();
+    renderUpcomingChecks();
+    openDuePanel(reopenCalendarDate);
+
+    reopenCalendarDate = null;
+  }
+}
+
+// ===== CALENDAR FUNCTIONS =====
+
+  function renderCalendar() {
+  const calendarGrid = document.getElementById("calendarGrid");
+  const calendarMonthTitle = document.getElementById("calendarMonthTitle");
+
+  calendarGrid.innerHTML = "";
+
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+
+  const firstDayOfMonth = new Date(year, month, 1);
+  const lastDayOfMonth = new Date(year, month + 1, 0);
+
+  const monthName = today.toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric"
+  });
+
+  calendarMonthTitle.textContent = monthName;
+
+  const startingWeekday = firstDayOfMonth.getDay();
+  const totalDays = lastDayOfMonth.getDate();
+
+  for (let i = 0; i < startingWeekday; i++) {
+    const emptyDay = document.createElement("div");
+    emptyDay.className = "calendar-day empty";
+    calendarGrid.appendChild(emptyDay);
+  }
+
+  for (let day = 1; day <= totalDays; day++) {
+    const date = new Date(year, month, day);
+
+    const dateString = dateToString(date);
+    const plantsDue = getPlantsDueOnDate(dateString);
+    const plantsWatered = getPlantsWateredOnDate(dateString);
+
+    const dayBox = document.createElement("div");
+    dayBox.className = "calendar-day";
+    dayBox.textContent = day;
+
+    if (dateString === selectedCalendarDate) {
+      dayBox.classList.add("selected-day");
+    }
+
+    if (dateString === getTodayString()) {
+      dayBox.classList.add("today");
+    }
+
+    if (plantsDue.length > 0 || plantsWatered.length > 0) {
+      dayBox.classList.add("has-due");
+
+      const dotRow = document.createElement("div");
+      dotRow.className = "calendar-dot-row";
+
+      if (plantsDue.length > 0) {
+        const dueDot = document.createElement("div");
+        dueDot.className = "calendar-dot";
+        dotRow.appendChild(dueDot);
+      }
+  
+      if (plantsWatered.length > 0) {
+        const wateredDot = document.createElement("div");
+        wateredDot.className = "calendar-watered-dot";
+        dotRow.appendChild(wateredDot);
+      }
+
+      const hasFertilizerDue = plantsDue.some(plant =>
+        shouldShowCalendarFertilizerRing(plant, dateString)
+      );
+
+      if (hasFertilizerDue) {
+        const fertilizerDot = document.createElement("div");
+        fertilizerDot.className = "fertilizer-calendar-dot";
+        dotRow.appendChild(fertilizerDot);
+      }
+
+      dayBox.appendChild(dotRow);
+
+      dayBox.addEventListener("click", function(event) {
+        event.stopPropagation();
+        selectedCalendarDate = dateString;
+        renderCalendar();
+        openDuePanel(dateString);
+      });
+    }
+
+    calendarGrid.appendChild(dayBox);
+  }
+}
+
+// ===== PLANTS DUE / WATERED PANEL FUNCTIONS =====
+
+  function openDuePanel(dateString) {
+  const duePanel = document.getElementById("duePanel");
+  const duePanelTitle = document.getElementById("duePanelTitle");
+  const duePlantList = document.getElementById("duePlantList");
+  const calendarPanel = document.getElementById("calendarPanel");
+
+  const hasAlreadySelectedThisDate =
+    selectedDueDate === dateString && selectedDuePlants.length > 0;
+
+  let plantsDue;
+
+  if (hasAlreadySelectedThisDate) {
+    plantsDue = selectedDuePlants;
+  } else {
+    plantsDue = getPlantsDueOnDate(dateString);
+    const plantsWatered = getPlantsWateredOnDate(dateString);
+
+    if (plantsDue.length === 0 && plantsWatered.length > 0) {
+      plantsDue = plantsWatered;
+    }
+
+    selectedDuePlants = [...plantsDue];
+  }
+
+  plantsDue.sort((a, b) => {
+    const aNeedsFertilizer =
+      hasFertilizerSchedule(a) &&
+      (shouldShowCalendarFertilizerRing(a, dateString) || a.lastFertilized === dateString);
+
+    const bNeedsFertilizer =
+      hasFertilizerSchedule(b) &&
+      (shouldShowCalendarFertilizerRing(b, dateString) || b.lastFertilized === dateString);
+
+    return bNeedsFertilizer - aNeedsFertilizer;
+  });
+
+  const hasDuePlants = getPlantsDueOnDate(dateString).length > 0;
+  const hasWateredPlants = getPlantsWateredOnDate(dateString).length > 0;
+
+  if (!hasDuePlants && hasWateredPlants) {
+    duePanelTitle.textContent = formatWateredPanelTitle(dateString);
+  } else {
+    duePanelTitle.textContent = formatDuePanelTitle(dateString);
+  }
+
+  const isTodayPanel = dateString === getTodayString();
+  const isWateredOnlyPanel = !hasDuePlants && hasWateredPlants;
+
+  const todayHasFertilizerButton = plantsDue.some(plant =>
+    hasFertilizerSchedule(plant) &&
+    (shouldShowCalendarFertilizerRing(plant, dateString) || plant.lastFertilized === dateString)
+  );
+  
+  duePanel.classList.remove(
+    "watered-only",
+    "today-with-fertilizer",
+    "today-no-fertilizer"
+  );
+  
+  if (isWateredOnlyPanel) {
+    duePanel.classList.add("watered-only");
+  } else if (isTodayPanel && todayHasFertilizerButton) {
+    duePanel.classList.add("today-with-fertilizer");
+  } else if (isTodayPanel) {
+    duePanel.classList.add("today-no-fertilizer");
+  }
+
+  duePlantList.innerHTML = "";
+  selectedDueDate = dateString;
+
+  duePanel.style.maxHeight = calendarPanel.offsetHeight + "px";
+
+  duePanel.classList.add("open");
+
+  plantsDue.forEach(plant => {
+    const plantItem = document.createElement("div");
+    plantItem.className = "due-plant-item";
+
+    const plantPhoto = document.createElement("img");
+    plantPhoto.className = "due-plant-photo";
+    plantPhoto.src = versionedPlantPhoto(plant.image);
+    plantPhoto.alt = plant.name;
+
+    const plantName = document.createElement("div");
+    plantName.className = "due-plant-name";
+    plantName.textContent = plant.name;
+
+    plantPhoto.addEventListener("click", function(event) {
+      event.stopPropagation();
+
+      const plantIndex = plants.indexOf(plant);
+
+      reopenCalendarDate = dateString;
+
+      closeDuePanel();
+      openPlantDetails(plantIndex);
+    });
+
+    const actionButtons = document.createElement("div");
+    actionButtons.className = "due-plant-actions";
+
+    if (isTodayPanel) {
+      const waterButton = document.createElement("button");
+      waterButton.className = "due-mini-button";
+      waterButton.textContent = "Water";
+
+      if (plant.lastWatered === dateString) {
+        waterButton.textContent = "Watered!";
+        waterButton.classList.add("watered-active");
+      }
+
+      waterButton.addEventListener("click", function(event) {
+        event.stopPropagation();
+        toggleWateredForPlant(plant);
+        refreshCalendarViews();
+      });
+
+      actionButtons.appendChild(waterButton);
+      if (
+        hasFertilizerSchedule(plant) &&
+        (shouldShowCalendarFertilizerRing(plant, dateString) || plant.lastFertilized === dateString)
+      ) {
+        const fertilizeButton = document.createElement("button");
+        fertilizeButton.className = "due-mini-button";
+        fertilizeButton.textContent = "Fertilize";
+
+        if (plant.lastFertilized === dateString) {
+          fertilizeButton.textContent = "Fertilized!";
+          fertilizeButton.classList.add("fertilized-active");
+        }
+
+        fertilizeButton.addEventListener("click", function(event) {
+          event.stopPropagation();
+          toggleFertilizedForPlant(plant);
+          refreshCalendarViews();
+        });
+
+        actionButtons.appendChild(fertilizeButton);
+      }
+    }
+
+    if (plant.lastWatered !== dateString && (dateString !== getTodayString() || plant.lastWatered !== getTodayString())) {
+      const delayBackButton = document.createElement("button");
+      delayBackButton.className = "due-mini-button delay-back-button";
+      delayBackButton.textContent = "-1 Day";
+
+      if (plant.intervalAdjustedToday === dateString) {
+        delayBackButton.textContent = "Earlier!";
+        delayBackButton.classList.add("earlier-active");
+      }
+
+      delayBackButton.addEventListener("click", function(event) {
+        event.stopPropagation();
+
+        const duePanel = document.getElementById("duePanel");
+        const savedScrollTop = duePanel.scrollTop;
+
+        moveWateringBackOneDayForPlant(plant, dateString);
+        plant.intervalAdjustedToday = dateString;
+        savePlantToFirebase(plant);
+
+        delayBackButton.textContent = "Earlier!";
+        delayBackButton.classList.add("earlier-active");
+
+        updateMarkerColors();
+        renderCalendar();
+        renderUpcomingChecks();
+
+        duePanel.scrollTop = savedScrollTop;
+      });
+
+      actionButtons.appendChild(delayBackButton);
+    }
+
+    if (plant.lastWatered !== dateString && (dateString !== getTodayString() || plant.lastWatered !== getTodayString())) {
+      const delayButton = document.createElement("button");
+      delayButton.className = "due-mini-button";
+      delayButton.textContent = "+1 Day";
+
+      const clickedDate = new Date(dateString + "T00:00:00");
+      clickedDate.setHours(0, 0, 0, 0);
+
+      const delayedDate = new Date(clickedDate);
+      delayedDate.setDate(clickedDate.getDate() + 1);
+
+      const delayedDateString = dateToString(delayedDate);
+
+      if (plant.delayUntil === delayedDateString) {
+        delayButton.textContent = "Delayed!";
+        delayButton.classList.add("delayed-active");
+      }
+
+      delayButton.addEventListener("click", function(event) {
+        event.stopPropagation();
+
+        const duePanel = document.getElementById("duePanel");
+        const savedScrollTop = duePanel.scrollTop;
+
+        toggleDelayWateringOneDayForPlant(plant, dateString);
+
+        updateMarkerColors();
+        renderCalendar();
+        renderUpcomingChecks();
+        openDuePanel(dateString);
+
+        duePanel.scrollTop = savedScrollTop;
+      });
+
+      actionButtons.appendChild(delayButton);
+
+      if (!isTodayPanel && hasFertilizerSchedule(plant) && shouldShowCalendarFertilizerRing(plant, dateString)) {
+        const fertilizerDot = document.createElement("div");
+        fertilizerDot.className = "due-plant-fertilizer-dot";
+        actionButtons.appendChild(fertilizerDot);
+      }
+    }
+
+    const plantMain = document.createElement("div");
+    plantMain.className = "due-plant-main";
+
+    const plantInfo = document.createElement("div");
+    plantInfo.className = "due-plant-info";
+
+    plantInfo.appendChild(plantName);
+    plantInfo.appendChild(actionButtons);
+
+    plantMain.appendChild(plantPhoto);
+    plantMain.appendChild(plantInfo);
+
+    plantItem.appendChild(plantMain);
+
+    duePlantList.appendChild(plantItem);
+  });
+}
+
+// ===== UPCOMING CHECKS FUNCTIONS =====
+
+  function renderUpcomingChecks() {
+  const upcomingList = document.getElementById("upcomingList");
+
+  upcomingList.innerHTML = "";
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const upcomingDays = [];
+
+  for (let i = 0; i <= 3; i++) {
+    const date = new Date(today);
+    date.setDate(today.getDate() + i);
+
+    const dateString = dateToString(date);
+    const plantsDue = getPlantsDueOnDate(dateString);
+
+    if (plantsDue.length > 0) {
+      upcomingDays.push({
+        date,
+        dateString,
+        plantsDue
+      });
+    }
+  }
+
+  if (upcomingDays.length === 0) {
+    upcomingList.innerHTML = `<div class="upcoming-item">No checks due this week.</div>`;
+    return;
+  }
+
+  upcomingDays.forEach(item => {
+    const daysUntil = Math.round((item.date - today) / (1000 * 60 * 60 * 24));
+
+    let label = "";
+
+    if (daysUntil === 0) {
+      label = "Today";
+    } else if (daysUntil === 1) {
+      label = "Tomorrow";
+    } else {
+      label = item.dateString.slice(5);
+    }
+
+    const upcomingItem = document.createElement("div");
+    upcomingItem.className = "upcoming-item clickable-upcoming";
+    upcomingItem.textContent = `${label} — ${item.plantsDue.length} plant${item.plantsDue.length === 1 ? "" : "s"}`;
+
+    upcomingItem.addEventListener("click", function() {
+      openDuePanel(item.dateString);
+    });
+
+    upcomingList.appendChild(upcomingItem);
+  });
+}
+
+// ===== CALENDAR OPEN / CLOSE FUNCTIONS =====
+
+function closeAllDashboardDrawers() {
+  const calendarDrawer =
+    document.getElementById("calendarDrawer");
+
+  const legendDrawer =
+    document.getElementById("legendDrawer");
+
+  if (calendarDrawer) {
+    calendarDrawer.classList.remove("open");
+  }
+
+  if (legendDrawer) {
+    legendDrawer.classList.remove("open");
+  }
+
+  closeDuePanel();
+}
+
+function toggleLegend() {
+  const legendDrawer = document.getElementById("legendDrawer");
+  legendDrawer.classList.toggle("open");
+}
+
+function toggleCalendar(event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  const calendarDrawer =
+    document.getElementById("calendarDrawer");
+
+  calendarDrawer.classList.toggle("open");
+
+  if (calendarDrawer.classList.contains("open")) {
+    renderCalendar();
+    renderUpcomingChecks();
+  } else {
+    closeDuePanel();
+  }
+}
+
+function closeDuePanel() {
+  document.getElementById("duePanel").classList.remove("open");
+  selectedDueDate = null;
+  selectedDuePlants = [];
+  selectedCalendarDate = null;
+  renderCalendar();
+}
+
+// ===== MODAL + OUTSIDE CLICK LISTENERS =====
+
+document.addEventListener("keydown", function(event) {
+  if (
+    event.key === "Shift" &&
+    editMode
+  ) {
+    document.body.classList.add("reveal-stickers");
+  }
+});
+
+document.addEventListener("keyup", function(event) {
+  if (event.key === "Shift") {
+    document.body.classList.remove("reveal-stickers");
+  }
+});
+
+window.addEventListener("blur", function() {
+  document.body.classList.remove("reveal-stickers");
+});
+
+  document.getElementById("plantModal").addEventListener("click", function(event) {
+  if (event.target.id === "plantModal") {
+    closeModal();
+  }
+});
+
+document.addEventListener("mousemove", function(event) {
+  if (trashRestorePlant && trashRestoreGhost) {
+    trashRestoreGhost.style.left = event.clientX + "px";
+    trashRestoreGhost.style.top = event.clientY + "px";
+  }
+
+  if ((!movingPlant && !movingDot) || !editingPlant) {
+    return;
+  }
+
+  const metrics = getImageMetrics();
+
+  const x = event.clientX - metrics.containerRect.left;
+  const y = event.clientY - metrics.containerRect.top;
+
+  const newX = ((x - moveOffsetX - metrics.offsetX) / metrics.displayedWidth) * 100;
+  const newY = ((y - moveOffsetY - metrics.offsetY) / metrics.displayedHeight) * 100;
+
+  if (movingDot) {
+    const stickerX = editingPlant.stickerX ?? editingPlant.x;
+    const stickerY = editingPlant.stickerY ?? editingPlant.y;
+
+    editingPlant.markerOffsetX = Number((newX - stickerX).toFixed(1));
+    editingPlant.markerOffsetY = Number((newY - stickerY).toFixed(1));
+  } else {
+    editingPlant.stickerX = Number(newX.toFixed(1));
+    editingPlant.stickerY = Number(newY.toFixed(1));
+  }
+
+  if (movingPlant) {
+    setTrashDragHighlight(
+      isPointerOverTrash(event)
+    );
+  } else {
+    setTrashDragHighlight(false);
+  }
+
+  positionMarkers();
+
+});
+
+document.addEventListener("mouseup", function(event) {
+document.body.classList.remove("sticker-dragging");
+  if (trashRestorePlant) {
+    const restoredPlant = trashRestorePlant;
+
+    const dragDistance = Math.hypot(
+      event.clientX - trashRestoreStartX,
+      event.clientY - trashRestoreStartY
+    );
+
+    const roomRect = roomContainer.getBoundingClientRect();
+
+    const droppedInsideRoom =
+      dragDistance >= 6 &&
+      event.clientX >= roomRect.left &&
+      event.clientX <= roomRect.right &&
+      event.clientY >= roomRect.top &&
+      event.clientY <= roomRect.bottom;
+
+    if (trashRestoreGhost) {
+      trashRestoreGhost.remove();
+    }
+
+    trashRestorePlant = null;
+    trashRestoreGhost = null;
+    trashRestoreStartX = 0;
+    trashRestoreStartY = 0;
+
+    if (!droppedInsideRoom) {
+      const trashPanel =
+        document.getElementById("trashPanel");
+
+      if (trashPanel && editMode) {
+        trashPanel.classList.add("open");
+      }
+
+      renderTrashDrawer();
+      return;
+    }
+
+    const metrics = getImageMetrics();
+
+    const cursorX =
+      event.clientX - metrics.containerRect.left;
+
+    const cursorY =
+      event.clientY - metrics.containerRect.top;
+
+    const newX =
+      ((cursorX - metrics.offsetX) /
+      metrics.displayedWidth) *
+    100;
+
+    const newY =
+      ((cursorY - metrics.offsetY) /
+      metrics.displayedHeight) *
+    100;
+
+    restoredPlant.inTrash = false;
+    restoredPlant.room = activeRoom;
+    restoredPlant.stickerX = Number(
+      Math.max(0, Math.min(100, newX)).toFixed(1)
+    );
+
+    restoredPlant.stickerY = Number(
+      Math.max(0, Math.min(100, newY)).toFixed(1)
+    );
+
+    savePlantToFirebase(restoredPlant);
+
+    renderTrashDrawer();
+    applyEditModeView();
+    positionMarkers();
+    updateRoomDueBadges();
+    openStickerEditControls(event, restoredPlant);
+
+    return;
+  }
+
+  if ((!movingPlant && !movingDot) || !editingPlant) {
+    return;
+  }
+
+  if (movingPlant && isPointerOverTrash(event)) {
+    moveEditingStickerToTrash();
+    return;
+  }
+
+  setTrashDragHighlight(false);
+
+  if (movingDot) {
+    ignoreNextMarkerClick = true;
+  }
+
+  movingPlant = false;
+  movingDot = false;
+
+  savePlantToFirebase(editingPlant);
+  positionMarkers();
+  positionEditControlsAbovePlant(editingPlant);
+});
+
+document.addEventListener("click", function(event) {
+  const plantModal = document.getElementById("plantModal");
+  const clickedInsideModal = plantModal.contains(event.target);
+  const trashDrawer = document.getElementById("trashDrawer");
+  const trashPanel = document.getElementById("trashPanel");
+  const clickedInsideTrash = trashDrawer && trashDrawer.contains(event.target);
+
+  if (
+    trashPanel &&
+    trashPanel.classList.contains("open") &&
+    !clickedInsideTrash
+  ) {
+    trashPanel.classList.remove("open");
+  }
+  
+  if ((movingPlant || movingDot) && editingPlant) {
+    event.stopPropagation();
+
+    movingPlant = false;
+    movingDot = false;
+    savePlantToFirebase(editingPlant);
+    positionMarkers();
+
+    if (editControls && editingPlant) {
+      positionEditControlsAbovePlant(editingPlant);
+    }
+
+    return;
+  }
+
+  const clickedInsideEditControls = editControls && editControls.contains(event.target);
+  const sliderPanel = document.getElementById("editSliderPanel");
+  const clickedInsideSliderPanel = sliderPanel && sliderPanel.contains(event.target);
+  const stickerSelectPopup = document.getElementById("stickerSelectPopup");
+  const clickedInsideStickerSelectPopup = stickerSelectPopup && stickerSelectPopup.contains(event.target);
+  const clickedSticker = event.target.classList && event.target.classList.contains("plant-sticker");
+  const clickedLegend = event.target.closest(".legend");
+  const clickedEditModeMenu = document.getElementById("editModeMenu").contains(event.target);
+  const clickedEditModeButton = document.getElementById("editModeButton").contains(event.target);
+    if (
+    !editMode &&
+    !clickedEditModeMenu &&
+    !clickedEditModeButton
+  ) {
+    setEditModeMenuOpen(false);
+  }
+
+  if (
+    editMode &&
+    !clickedSticker &&
+    !clickedLegend &&
+    !clickedInsideEditControls &&
+    !clickedInsideSliderPanel &&
+    !clickedInsideStickerSelectPopup &&
+    !clickedEditModeMenu &&
+    !clickedEditModeButton
+  ) {
+    closeStickerSelectPopup();
+
+    if (editingPlant) {
+      savePlantToFirebase(editingPlant);
+    }
+
+    movingPlant = false;
+    movingDot = false;
+    dotMoveReady = false;
+
+    const dotButton = document.getElementById("moveDotButton");
+    if (dotButton) {
+      dotButton.classList.remove("active-edit-button");
+    }
+
+    const sliderPanel = document.getElementById("editSliderPanel");
+    if (sliderPanel) {
+      sliderPanel.classList.remove("open");
+      sliderPanel.style.display = "none";
+    }
+
+    activeSliderControl = null;
+
+    if (editControls) {
+      editControls.style.display = "flex";
+    }
+  }
+
+    const clickedInsideDashboardDrawer =
+      event.target.closest(
+        ".calendar-drawer, .legend-drawer"
+      );
+
+    const plantCardIsOpen =
+      plantModal.style.display === "flex";
+
+    if (
+      !clickedInsideDashboardDrawer &&
+      !clickedInsideModal &&
+      !plantCardIsOpen
+    ) {
+      closeAllDashboardDrawers();
+    }
+});
+
+const editSliderPanel = document.getElementById("editSliderPanel");
+
+if (editSliderPanel) {
+  editSliderPanel.addEventListener("mousedown", function(event) {
+    event.stopPropagation();
+  });
+
+  editSliderPanel.addEventListener("mouseup", function(event) {
+    event.stopPropagation();
+  });
+
+  editSliderPanel.addEventListener("click", function(event) {
+    event.stopPropagation();
+  });
+}
+
+document.getElementById("editSlider").addEventListener("input", function(event) {
+  if (!editingPlant || !activeSliderControl) {
+    return;
+  }
+
+  const sliderValue = Number(event.target.value);
+
+  if (activeSliderControl === "size") {
+    editingPlant.stickerWidth = sliderValue;
+  }
+
+  if (activeSliderControl === "rotate") {
+    editingPlant.stickerRotation = sliderValue;
+  }
+
+  if (activeSliderControl === "width") {
+    editingPlant.stickerScaleX = sliderValue;
+  }
+
+  if (activeSliderControl === "height") {
+    editingPlant.stickerScaleY = sliderValue;
+  }
+
+  positionMarkers();
+});
+
+document.getElementById("editSlider").addEventListener("change", function() {
+  if (!editingPlant) {
+    return;
+  }
+
+  savePlantToFirebase(editingPlant);
+});
+
+window.addEventListener("resize", positionMarkers);
+
+// ===== ROOM VIEW FUNCTIONS =====
+
+function getRoomView(roomNumber) {
+  return roomViews.find(room => room.id === roomNumber) || roomViews[0];
+}
+
+function updateRoomButtonSelection() {
+  document.querySelectorAll(".room-view-button").forEach(button => {
+    const buttonRoom = Number(button.dataset.room);
+    button.classList.toggle("active-room", buttonRoom === activeRoom);
+    button.setAttribute("aria-pressed", buttonRoom === activeRoom ? "true" : "false");
+  });
+}
+
+function updateRoomDueBadges() {
+  roomViews.forEach(room => {
+    const dueCount = plants.filter(plant => {
+      if (plant.inTrash || (Number(plant.room) || 1) !== room.id) {
+        return false;
+      }
+
+      const status = getPlantStatus(plant);
+      return status.color === "red" || status.color === "darkred";
+    }).length;
+
+    const badge = document.getElementById(`roomDueBadge${room.id}`);
+    if (!badge) {
+      return;
+    }
+
+    badge.textContent = dueCount;
+    badge.classList.toggle("has-items", dueCount > 0);
+  });
+}
+
+function switchRoom(roomNumber, event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  const nextRoom = Number(roomNumber);
+  if (!roomViews.some(room => room.id === nextRoom)) {
+    return;
+  }
+
+  if (editingPlant && !movingPlant && !movingDot) {
+    savePlantToFirebase(editingPlant);
+  }
+
+  activeRoom = nextRoom;
+  localStorage.setItem("newHouseActiveRoom", String(activeRoom));
+  updateRoomButtonSelection();
+
+  const roomView = getRoomView(activeRoom);
+  const finishRoomSwitch = () => {
+    applyEditModeView();
+    positionMarkers();
+    updateRoomDueBadges();
+  };
+
+  if (roomImage.getAttribute("src") === roomView.image) {
+    finishRoomSwitch();
+  } else {
+    roomImage.addEventListener("load", finishRoomSwitch, { once: true });
+    roomImage.src = roomView.image;
+  }
+
+  if (editingPlant && !itemIsInActiveRoom(editingPlant)) {
+    editingPlant = null;
+    if (editControls) {
+      editControls.style.display = "none";
+    }
+    closeStickerSelectPopup();
+  }
+}
+
+function initializeRoomSwitcher() {
+  updateRoomButtonSelection();
+  updateRoomDueBadges();
+
+  const roomView = getRoomView(activeRoom);
+  roomImage.src = roomView.image;
+}
+
+// ===== STARTUP / PAGE LOAD =====
+
+  function preloadPlantImages() {
+  dashboardItems.forEach(plant => {
+    if (plant.image) {
+      const photo = new Image();
+      photo.src = versionedPlantPhoto(plant.image);
+    }
+
+    if (plant.sticker) {
+      const sticker = new Image();
+      sticker.src = plant.sticker;
+    }
+  });
+}
+
+createStickerEditControls();
+preloadPlantImages();
+initializeRoomSwitcher();
+
+if (roomImage.complete) {
+  createMarkers();
+} else {
+  roomImage.addEventListener("load", createMarkers);
+}
+
+    </script>
+  </body>
+</html>
