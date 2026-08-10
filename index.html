@@ -747,7 +747,6 @@ h2, .status-pill, .close-button, .legend {
 #rotateSliderButton,
 #widthSliderButton,
 #heightSliderButton,
-#moveRoomButton,
 #sendBackwardStickerButton,
 #bringForwardStickerButton {
   width: 42px;
@@ -4648,14 +4647,6 @@ function createStickerEditControls() {
         <img src="icons/height.png" alt="Height">
       </button>
 
-      <button id="moveRoomButton" data-tooltip="Move room" aria-label="Move to another room">
-        <svg viewBox="0 0 24 24" aria-hidden="true" style="width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;">
-          <path d="M4 10.5 12 4l8 6.5"></path>
-          <path d="M6.5 9.5V20h11V9.5"></path>
-          <path d="M10 20v-6h4v6"></path>
-        </svg>
-      </button>
-
       <button id="sendBackwardStickerButton" data-tooltip="Backward">
         <img src="icons/backward.png" alt="Backward">
       </button>
@@ -4676,7 +4667,6 @@ function createStickerEditControls() {
   document.getElementById("rotateSliderButton").addEventListener("click", openRotateSlider);
   document.getElementById("widthSliderButton").addEventListener("click", openWidthSlider);
   document.getElementById("heightSliderButton").addEventListener("click", openHeightSlider);
-  document.getElementById("moveRoomButton").addEventListener("click", openMoveRoomMenu);
   document.getElementById("sendBackwardStickerButton").addEventListener("click", sendStickerBackward);
   document.getElementById("bringForwardStickerButton").addEventListener("click", bringStickerForward);
 }
@@ -5000,50 +4990,6 @@ function openWidthSlider(event) {
 
 function openHeightSlider(event) {
   openStickerSlider(event, "height");
-}
-
-function openMoveRoomMenu(event) {
-  event.stopPropagation();
-
-  if (!editingPlant) {
-    return;
-  }
-
-  selectStickerEditButton("moveRoomButton");
-
-  const popup = document.getElementById("stickerSelectPopup");
-  if (!popup) {
-    return;
-  }
-
-  popup.innerHTML = `<div class="sticker-select-popup-title">Move to room</div>`;
-
-  roomViews.forEach(room => {
-    const button = document.createElement("button");
-    button.textContent = `Room ${room.id}${editingPlant.room === room.id ? " ✓" : ""}`;
-
-    button.addEventListener("click", function(popupEvent) {
-      popupEvent.preventDefault();
-      popupEvent.stopPropagation();
-
-      editingPlant.room = room.id;
-      savePlantToFirebase(editingPlant);
-      closeStickerSelectPopup();
-      switchRoom(room.id, popupEvent);
-
-      applyEditModeView();
-      positionMarkers();
-      updateRoomDueBadges();
-      positionEditControlsAbovePlant(editingPlant);
-    });
-
-    popup.appendChild(button);
-  });
-
-  const buttonRect = event.currentTarget.getBoundingClientRect();
-  popup.style.left = Math.min(window.innerWidth - 190, buttonRect.left) + "px";
-  popup.style.top = (buttonRect.bottom + 10) + "px";
-  popup.classList.add("open");
 }
 
 function sendStickerBackward(event) {
