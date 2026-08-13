@@ -2608,7 +2608,7 @@ body.dashboard-card-open .room-view-switcher {
 <!-- ===== ROOM IMAGE + LEGEND ===== -->
 
 <div class="room-container" id="roomContainer">
-<img src="livingroom.jpg?v=room5" class="room-image">
+<img src="room-views/room-view1.jpg" class="room-image">
 
 <!-- Color legend -->
 
@@ -3768,10 +3768,10 @@ const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
 // Replace these image paths with the four new-house room images when you have them.
 // They temporarily use the current living-room image so every view works immediately.
 const roomViews = [
-  { id: 1, image: "livingroom.jpg?v=room5" },
-  { id: 2, image: "livingroom.jpg?v=room5" },
-  { id: 3, image: "livingroom.jpg?v=room5" },
-  { id: 4, image: "livingroom.jpg?v=room5" }
+  { id: 1, image: "room-views/room-view1.jpg" },
+  { id: 2, image: "room-views/room-view2.jpg" },
+  { id: 3, image: "room-views/room-view3.jpg" },
+  { id: 4, image: "room-views/room-view4.jpg" }
 ];
 
 let activeRoom = Number(localStorage.getItem("newHouseActiveRoom")) || 1;
@@ -6896,6 +6896,13 @@ function getRoomView(roomNumber) {
   return roomViews.find(room => room.id === roomNumber) || roomViews[0];
 }
 
+function preloadRoomViews() {
+  roomViews.forEach(room => {
+    const image = new Image();
+    image.src = room.image;
+  });
+}
+
 function updateRoomButtonSelection() {
   document.querySelectorAll(".room-view-button").forEach(button => {
     const buttonRoom = Number(button.dataset.room);
@@ -6993,6 +7000,7 @@ function initializeRoomSwitcher() {
 
 createStickerEditControls();
 preloadPlantImages();
+preloadRoomViews();
 initializeRoomSwitcher();
 
 if (roomImage.complete) {
