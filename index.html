@@ -4035,8 +4035,7 @@ function getRoomButtonAtPoint(event) {
   if (
     !movingPlant ||
     !editingPlant ||
-    editMode !== "plants" ||
-    editingPlant.decorative
+    !isStickerEditableInCurrentMode(editingPlant)
   ) {
     return null;
   }
