@@ -6741,7 +6741,18 @@ document.addEventListener("click", function(event) {
   ) {
     trashPanel.classList.remove("open");
   }
-  
+
+  // A room-button click only changes rooms.
+  // Do NOT use that same click to place the plant.
+  if (
+    movingPlant &&
+    editingPlant &&
+    event.target.closest(".room-view-button")
+  ) {
+    event.stopPropagation();
+    return;
+  }
+
   if ((movingPlant || movingDot) && editingPlant) {
     event.stopPropagation();
 
