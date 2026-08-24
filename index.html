@@ -3778,6 +3778,7 @@ let selectedDuePlants = [];
 let selectedCalendarDate = null;
 let editingPlant = null;
 let movingPlant = false;
+let placingPlantAfterRoomSwitch = false;
 let editControls = null;
 let dotMoveReady = false;
 let movingDot = false;
@@ -6528,7 +6529,98 @@ window.addEventListener("blur", function() {
   }
 });
 
+function moveTransferredPlantWithPointer(clientX, clientY) {
+  if (!placingPlantAfterRoomSwitch || !editingPlant) {
+    return false;
+  }
+
+  const metrics = getImageMetrics();
+
+  if (
+    !Number.isFinite(metrics.displayedWidth) ||
+    !Number.isFinite(metrics.displayedHeight) ||
+    metrics.displayedWidth <= 0 ||
+    metrics.displayedHeight <= 0
+  ) {
+    return false;
+  }
+
+  const x = clientX - metrics.containerRect.left;
+  const y = clientY - metrics.containerRect.top;
+
+  const newX =
+    ((x - moveOffsetX - metrics.offsetX) /
+    metrics.displayedWidth) *
+    100;
+
+  const newY =
+    ((y - moveOffsetY - metrics.offsetY) /
+    metrics.displayedHeight) *
+    100;
+
+  editingPlant.stickerX =
+    Number(Math.max(0, Math.min(100, newX)).toFixed(1));
+
+  editingPlant.stickerY =
+    Number(Math.max(0, Math.min(100, newY)).toFixed(1));
+
+  positionMarkers();
+  return true;
+}
+
+document.addEventListener("mousedown", function(event) {
+  if (
+    !placingPlantAfterRoomSwitch ||
+    !editingPlant ||
+    event.button !== 0
+  ) {
+    return;
+  }
+
+  if (
+    event.target.closest(".room-view-switcher") ||
+    event.target.closest(".trash-drawer")
+  ) {
+    return;
+  }
+
+  const roomRect = roomContainer.getBoundingClientRect();
+
+  const clickedInsideRoom =
+    event.clientX >= roomRect.left &&
+    event.clientX <= roomRect.right &&
+    event.clientY >= roomRect.top &&
+    event.clientY <= roomRect.bottom;
+
+  if (!clickedInsideRoom) {
+    return;
+  }
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  moveTransferredPlantWithPointer(
+    event.clientX,
+    event.clientY
+  );
+
+  placingPlantAfterRoomSwitch = false;
+  document.body.classList.remove("sticker-dragging");
+
+  savePlantToFirebase(editingPlant);
+  positionMarkers();
+  positionEditControlsAbovePlant(editingPlant);
+}, true);
+
 document.addEventListener("mousemove", function(event) {
+  if (placingPlantAfterRoomSwitch && editingPlant) {
+    moveTransferredPlantWithPointer(
+      event.clientX,
+      event.clientY
+    );
+    return;
+  }
+  
   if (trashRestorePlant && trashRestoreGhost) {
     trashRestoreGhost.style.left = event.clientX + "px";
     trashRestoreGhost.style.top = event.clientY + "px";
@@ -6681,30 +6773,29 @@ document.body.classList.remove("sticker-dragging");
   const roomTargetButton =
     movingPlant ? getRoomButtonAtPoint(event) : null;
 
-  if (roomTargetButton) {
-    const targetRoom =
-      Number(roomTargetButton.dataset.room);
+if (roomTargetButton) {
+  const targetRoom =
+    Number(roomTargetButton.dataset.room);
 
-    setRoomDragHighlight(null);
-    setTrashDragHighlight(false);
+  setRoomDragHighlight(null);
+  setTrashDragHighlight(false);
 
-    editingPlant.room = targetRoom;
+  editingPlant.room = targetRoom;
 
-    savePlantToFirebase(editingPlant);
+  savePlantToFirebase(editingPlant);
 
-    switchRoom(targetRoom, event);
+  // End the original drag and start placement mode.
+  movingPlant = false;
+  movingDot = false;
+  placingPlantAfterRoomSwitch = true;
 
-    applyEditModeView();
-    positionMarkers();
-    updateRoomDueBadges();
+  switchRoom(targetRoom, event);
 
-    // Keep the sticker attached to the mouse after changing rooms.
-    movingPlant = true;
-    movingDot = false;
-    document.body.classList.add("sticker-dragging");
+  updateRoomDueBadges();
+  document.body.classList.add("sticker-dragging");
 
-    return;
-  }
+  return;
+}
 
   setRoomDragHighlight(null);
 
