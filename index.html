@@ -3793,6 +3793,38 @@ const furniture = [
     stickerRotation: 0,
     stickerScaleX: 1,
     stickerScaleY: 1
+  },
+  {
+    name: "Desk",
+    decorative: true,
+    decorLayer: "behind",
+    locked: true,
+    room: 1,
+    x: 50,
+    y: 50,
+    sticker: "decor-stickers/desk.png",
+    stickerX: 50,
+    stickerY: 50,
+    stickerWidth: 180,
+    stickerRotation: 0,
+    stickerScaleX: 1,
+    stickerScaleY: 1
+  },
+  {
+    name: "Tall Lamp",
+    decorative: true,
+    decorLayer: "behind",
+    locked: true,
+    room: 1,
+    x: 50,
+    y: 50,
+    sticker: "decor-stickers/tall-lamp.png",
+    stickerX: 50,
+    stickerY: 50,
+    stickerWidth: 180,
+    stickerRotation: 0,
+    stickerScaleX: 1,
+    stickerScaleY: 1
   }
 ];
 
@@ -3815,8 +3847,6 @@ const roomContainer = document.getElementById("roomContainer");
 const roomImage = document.querySelector(".room-image");
 const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
 
-// Replace these image paths with the four new-house room images when you have them.
-// They temporarily use the current living-room image so every view works immediately.
 const roomViews = [
   { id: 1, image: "room-views/room-view1.jpg" },
   { id: 2, image: "room-views/room-view2.jpg" },
