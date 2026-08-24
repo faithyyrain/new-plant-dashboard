@@ -6688,9 +6688,6 @@ document.body.classList.remove("sticker-dragging");
     setRoomDragHighlight(null);
     setTrashDragHighlight(false);
 
-    movingPlant = false;
-    movingDot = false;
-
     editingPlant.room = targetRoom;
 
     savePlantToFirebase(editingPlant);
@@ -6700,7 +6697,11 @@ document.body.classList.remove("sticker-dragging");
     applyEditModeView();
     positionMarkers();
     updateRoomDueBadges();
-    positionEditControlsAbovePlant(editingPlant);
+
+    // Keep the sticker attached to the mouse after changing rooms.
+    movingPlant = true;
+    movingDot = false;
+    document.body.classList.add("sticker-dragging");
 
     return;
   }
