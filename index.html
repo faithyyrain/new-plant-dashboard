@@ -1820,23 +1820,33 @@ h2, .status-pill, .close-button, .legend {
 }
 
 .trash-button {
-  width: 42px;
-  height: 42px;
+  position: relative;
+  width: 50px;
+  height: 50px;
   padding: 0;
   border: 2px solid rgb(165, 153, 138);
-  border-radius: 50%;
+  border-radius: 12px;
   background: rgb(197, 187, 172);
   color: white;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
   transition: transform 0.15s ease, filter 0.15s ease;
 }
 
 .trash-button:hover {
   filter: brightness(1.12);
   transform: scale(1.08);
+}
+
+.trash-icon {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
 }
 
 .trash-count {
@@ -2627,16 +2637,7 @@ body.dashboard-card-open .room-view-switcher {
     id="trashButton"
     aria-label="Open trash"
   >
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M4 7h16">
-      </path>
-      <path d="M9 7V4h6v3">
-      </path>
-      <path d="M6.5 7l1 14h9l1-14">
-      </path>
-      <path d="M10 11v6M14 11v6">
-      </path>
-    </svg>
+    <img src="Icons/trash-icon.png" alt="" class="trash-icon">
     <span class="trash-count" id="trashCount">0</span>
   </button>
 </div>
