@@ -226,53 +226,6 @@ h2, .status-pill, .close-button, .legend {
   transform: scale(1.08);
 }
 
-.sticker-select-popup {
-  display: none;
-  position: fixed;
-  z-index: 8000;
-  min-width: 170px;
-  max-width: 240px;
-  padding: 10px;
-  border-radius: 16px;
-  background: rgba(224, 221, 215, 0.82);
-  box-shadow: 0 0 14px rgba(0, 0, 0, 0.38);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-.sticker-select-popup.open {
-  display: block;
-}
-
-.sticker-select-popup-title {
-  margin: 0 0 8px 0;
-  font-size: 13px;
-  font-weight: 800;
-  color: #333;
-  text-align: center;
-}
-
-.sticker-select-popup button {
-  display: block;
-  width: 100%;
-  margin: 5px 0;
-  padding: 7px 10px;
-  border: none;
-  border-radius: 999px;
-  background: rgba(84, 87, 87, 0.84);
-  color: white;
-  cursor: pointer;
-  font-size: 13px;
-  font-family: "Nunito", Arial, sans-serif;
-  font-weight: 800;
-  text-align: center;
-}
-
-.sticker-select-popup button:hover {
-  filter: brightness(1.12);
-  transform: scale(1.02);
-}
-
 .calendar-panel {
   width: 390px;
   border-radius: 22px;
@@ -2223,7 +2176,6 @@ h2, .status-pill, .close-button, .legend {
 body.reveal-stickers .edit-mode-control,
 body.reveal-stickers .sticker-edit-controls,
 body.reveal-stickers .edit-slider-panel,
-body.reveal-stickers .sticker-select-popup,
 body.reveal-stickers .trash-drawer,
 body.reveal-stickers .room-view-switcher {
   display: none !important;
@@ -2234,7 +2186,6 @@ body.reveal-stickers .room-view-switcher {
 body.sticker-dragging .edit-mode-control,
 body.sticker-dragging .sticker-edit-controls,
 body.sticker-dragging .edit-slider-panel,
-body.sticker-dragging .sticker-select-popup,
 body.sticker-dragging .calendar-drawer,
 body.sticker-dragging .legend-drawer,
 body.sticker-dragging .trash-panel {
@@ -2251,7 +2202,8 @@ body.dashboard-card-open .legend-drawer {
 }
 
 body.dashboard-card-open .edit-mode-control,
-body.dashboard-card-open .room-view-switcher {
+body.dashboard-card-open .room-view-switcher,
+body:has(#duePanel.open) .room-view-switcher {
   display: none !important;
 }
 
@@ -2420,7 +2372,6 @@ body.dashboard-card-open .room-view-switcher {
   .edit-mode-menu,
   .edit-slider-panel,
   .sticker-edit-controls,
-  .sticker-select-popup,
   .legend-drawer,
   .trash-drawer {
     display: none !important;
@@ -4161,7 +4112,6 @@ function moveEditingStickerToTrash() {
 
   activeSliderControl = null;
 
-  closeStickerSelectPopup();
   renderTrashDrawer();
   applyEditModeView();
   updateRoomDueBadges();
@@ -4732,10 +4682,6 @@ function createStickerEditControls() {
 
   document.body.appendChild(editControls);
 
-  const stickerSelectPopup = document.createElement("div");
-  stickerSelectPopup.id = "stickerSelectPopup";
-  stickerSelectPopup.className = "sticker-select-popup";
-  document.body.appendChild(stickerSelectPopup);
   document.getElementById("moveDotButton").addEventListener("click", startDotMoveMode);
   document.getElementById("sizeStickerButton").addEventListener("click", openSizeSlider);
   document.getElementById("rotateSliderButton").addEventListener("click", openRotateSlider);
@@ -4769,117 +4715,6 @@ function isStickerEditableInCurrentMode(plant) {
   }
 
   return false;
-}
-
-function clickedVisibleStickerPixel(sticker, plant, event) {
-  if (!sticker.complete || !sticker.naturalWidth || !sticker.naturalHeight) {
-    return true;
-  }
-
-  const rect = sticker.getBoundingClientRect();
-
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
-
-  const clickX = event.clientX - centerX;
-  const clickY = event.clientY - centerY;
-
-  const rotation = (plant.stickerRotation || 0) * Math.PI / 180;
-  const scaleX = plant.stickerScaleX || 1;
-  const scaleY = plant.stickerScaleY || 1;
-
-  const unrotatedX = clickX * Math.cos(rotation) + clickY * Math.sin(rotation);
-  const unrotatedY = -clickX * Math.sin(rotation) + clickY * Math.cos(rotation);
-
-  const baseWidth = sticker.offsetWidth;
-  const baseHeight = sticker.offsetHeight;
-
-  const imageX = (unrotatedX / scaleX) + baseWidth / 2;
-  const imageY = (unrotatedY / scaleY) + baseHeight / 2;
-
-  if (
-    imageX < 0 ||
-    imageX > baseWidth ||
-    imageY < 0 ||
-    imageY > baseHeight
-  ) {
-    return false;
-  }
-
-  const canvas = document.createElement("canvas");
-  canvas.width = sticker.naturalWidth;
-  canvas.height = sticker.naturalHeight;
-
-  const context = canvas.getContext("2d");
-  context.drawImage(sticker, 0, 0);
-
-  const sampleX = Math.floor((imageX / baseWidth) * sticker.naturalWidth);
-  const sampleY = Math.floor((imageY / baseHeight) * sticker.naturalHeight);
-
-  const pixel = context.getImageData(sampleX, sampleY, 1, 1).data;
-  const alpha = pixel[3];
-
-  return alpha > 20;
-}
-
-function getStickerCandidatesAtPoint(event) {
-  return stickers.filter(({ sticker, plant }) => {
-    if (!isStickerEditableInCurrentMode(plant)) {
-      return false;
-    }
-
-    if (sticker.style.display === "none") {
-      return false;
-    }
-
-    const rect = sticker.getBoundingClientRect();
-
-    const insideRectangle =
-      event.clientX >= rect.left &&
-      event.clientX <= rect.right &&
-      event.clientY >= rect.top &&
-      event.clientY <= rect.bottom;
-
-    if (!insideRectangle) {
-      return false;
-    }
-
-    return clickedVisibleStickerPixel(sticker, plant, event);
-  });
-}
-
-function closeStickerSelectPopup() {
-  const popup = document.getElementById("stickerSelectPopup");
-
-  if (popup) {
-    popup.classList.remove("open");
-    popup.innerHTML = "";
-  }
-}
-
-function showStickerSelectPopup(event, candidates) {
-  const popup = document.getElementById("stickerSelectPopup");
-
-  if (!popup) return;
-
-  popup.innerHTML = `<div class="sticker-select-popup-title">Select sticker</div>`;
-
-  candidates.forEach(({ plant }) => {
-    const button = document.createElement("button");
-    button.textContent = plant.name;
-
-    button.addEventListener("click", function(popupEvent) {
-      popupEvent.stopPropagation();
-      closeStickerSelectPopup();
-      openStickerEditControls(event, plant);
-    });
-
-    popup.appendChild(button);
-  });
-
-  popup.style.left = event.clientX + 12 + "px";
-  popup.style.top = event.clientY + 12 + "px";
-  popup.classList.add("open");
 }
 
 function openStickerEditControls(event, plant) {
@@ -5122,7 +4957,6 @@ function lockStickerEdits(event) {
   }
 
   activeSliderControl = null;
-  closeStickerSelectPopup();
 
 }
 
@@ -5497,23 +5331,6 @@ function createMarkers() {
       sticker.src = plant.sticker;
       sticker.alt = plant.name;
       sticker.draggable = false;
-      sticker.addEventListener("click", function(event) {
-        if (!editMode) {
-          return;
-        }
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        const candidates = getStickerCandidatesAtPoint(event);
-
-        if (candidates.length <= 1) {
-          openStickerEditControls(event, plant);
-          return;
-        }
-
-        showStickerSelectPopup(event, candidates);
-      });
 
       sticker.addEventListener("mousedown", function(event) {
         if (!editMode) {
@@ -5540,6 +5357,7 @@ function createMarkers() {
 
         movingPlant = true;
         document.body.classList.add("sticker-dragging");
+        positionMarkers();
       });
 
       roomContainer.appendChild(sticker);
@@ -5692,7 +5510,8 @@ function positionMarkers() {
       stickerZ = 100 + Math.round(stickerY * 10) + zOffset;
     }
 
-    sticker.style.zIndex = Math.max(1, stickerZ);
+    const stickerIsBeingMoved = plant === editingPlant && (movingPlant || placingPlantAfterRoomSwitch);
+    sticker.style.zIndex = stickerIsBeingMoved ? 9000 : Math.max(1, stickerZ);
     sticker.style.transform = `translate(-50%, -50%) rotate(${stickerRotation}deg) scale(${stickerScaleX}, ${stickerScaleY})`;
   });
 
@@ -6863,6 +6682,9 @@ document.body.classList.remove("sticker-dragging");
     );
 
     savePlantToFirebase(restoredPlant);
+    if (editMode !== (restoredPlant.decorative ? "decor" : "plants")) {
+      startEditMode(restoredPlant.decorative ? "decor" : "plants");
+    }    
 
     renderTrashDrawer();
     applyEditModeView();
@@ -6970,13 +6792,12 @@ document.addEventListener("click", function(event) {
   const clickedInsideEditControls = editControls && editControls.contains(event.target);
   const sliderPanel = document.getElementById("editSliderPanel");
   const clickedInsideSliderPanel = sliderPanel && sliderPanel.contains(event.target);
-  const stickerSelectPopup = document.getElementById("stickerSelectPopup");
-  const clickedInsideStickerSelectPopup = stickerSelectPopup && stickerSelectPopup.contains(event.target);
   const clickedSticker = event.target.classList && event.target.classList.contains("plant-sticker");
   const clickedLegend = event.target.closest(".legend");
   const clickedEditModeMenu = document.getElementById("editModeMenu").contains(event.target);
   const clickedEditModeButton = document.getElementById("editModeButton").contains(event.target);
-    if (
+
+  if (
     !editMode &&
     !clickedEditModeMenu &&
     !clickedEditModeButton
@@ -6990,11 +6811,9 @@ document.addEventListener("click", function(event) {
     !clickedLegend &&
     !clickedInsideEditControls &&
     !clickedInsideSliderPanel &&
-    !clickedInsideStickerSelectPopup &&
     !clickedEditModeMenu &&
     !clickedEditModeButton
   ) {
-    closeStickerSelectPopup();
 
     if (editingPlant) {
       savePlantToFirebase(editingPlant);
@@ -7171,7 +6990,6 @@ function switchRoom(roomNumber, event) {
     if (editControls) {
       editControls.style.display = "none";
     }
-    closeStickerSelectPopup();
   }
 }
 
