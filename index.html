@@ -445,9 +445,12 @@ h2, .status-pill, .close-button, .legend {
 }
 
 .due-bulk-actions {
+  width: 100%;
+  box-sizing: border-box;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  margin: 2px 0 10px;
 }
 
 .due-bulk-actions .due-mini-button {
@@ -2494,9 +2497,6 @@ body:has(#duePanel.open) .room-view-switcher {
     </div>
     <button class="due-close-button" onclick="closeDuePanel()">×</button>
   </div>
-  <div id="duePlantList">
-  </div>
-</div>
 
 <!-- Main calendar panel -->
 
@@ -6124,8 +6124,16 @@ function bulkMarkDuePlants(action, event) {
     ...duePlants,
     ...wateredPlants.filter(plant => !duePlants.includes(plant))
   ];
+  
+  selectedDuePlants = plantsDue;    
+  const duePlants = getPlantsDueOnDate(dateString);
+  const wateredPlants = getPlantsWateredOnDate(dateString);
+  const plantsDue = [
+    ...duePlants,
+    ...wateredPlants.filter(plant => !duePlants.includes(plant))
+  ];
   selectedDuePlants = plantsDue;
-      
+
   queueMicrotask(updateBulkDueButtons);
   const duePanel = document.getElementById("duePanel");
 
