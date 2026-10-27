@@ -6127,7 +6127,8 @@ function bulkMarkDuePlants(action, event) {
     ...duePlants,
     ...wateredPlants.filter(plant => !duePlants.includes(plant))
   ];
-
+  
+  selectedDuePlants = plantsDue;
   queueMicrotask(updateBulkDueButtons);
   const duePanel = document.getElementById("duePanel");
 
