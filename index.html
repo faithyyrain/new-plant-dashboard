@@ -2491,11 +2491,12 @@ body:has(#duePanel.open) .room-view-switcher {
 <div class="due-panel" id="duePanel">
   <div class="due-panel-header">
     <h3 id="duePanelTitle">Plants Due</h3>
-    <div class="due-bulk-actions" id="dueBulkActions" style="display: none;">
-      <button type="button" class="due-mini-button" id="waterAllButton" onclick="bulkMarkDuePlants('water', event)">Water All</button>
-      <button type="button" class="due-mini-button" id="fertilizeAllButton" onclick="bulkMarkDuePlants('fertilize', event)">Fertilize All</button>
-    </div>
     <button class="due-close-button" onclick="closeDuePanel()">×</button>
+  </div>
+
+  <div class="due-bulk-actions" id="dueBulkActions" style="display: none;">
+    <button type="button" class="due-mini-button" id="waterAllButton" onclick="bulkMarkDuePlants('water', event)">Water All</button>
+    <button type="button" class="due-mini-button" id="fertilizeAllButton" onclick="bulkMarkDuePlants('fertilize', event)">Fertilize All</button>
   </div>
   <div id="duePlantList">
   </div>
@@ -6127,7 +6128,7 @@ function bulkMarkDuePlants(action, event) {
     ...duePlants,
     ...wateredPlants.filter(plant => !duePlants.includes(plant))
   ];
-  
+
   selectedDuePlants = plantsDue;
   queueMicrotask(updateBulkDueButtons);
   const duePanel = document.getElementById("duePanel");
