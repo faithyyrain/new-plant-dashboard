@@ -485,6 +485,23 @@ h2, .status-pill, .close-button, .legend {
   font-family: "Nunito", Arial, sans-serif;
 }
 
+.due-panel-header {
+  flex-direction: column;
+  gap: 7px;
+  padding: 10px 38px;
+}
+
+.due-bulk-actions {
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.due-bulk-actions .due-mini-button {
+  min-width: 94px;
+  font-weight: 800;
+}
+
 .due-close-button {
   position: absolute;
   right: 8px;
@@ -1824,9 +1841,9 @@ h2, .status-pill, .close-button, .legend {
   width: 50px;
   height: 50px;
   padding: 0;
-  border: 2px solid rgb(165, 153, 138);
+  border: 2px solid rgb(112, 112, 112);
   border-radius: 12px;
-  background: rgb(197, 187, 172);
+  background: rgb(160, 160, 160);
   color: white;
   cursor: pointer;
   display: flex;
@@ -1870,18 +1887,20 @@ h2, .status-pill, .close-button, .legend {
 }
 
 .trash-count.has-items {
-  display: flex;
+  display: none;
 }
 
-.trash-drawer.drag-over .trash-button {
+.trash-drawer.drag-over:not(.decor-target) #trashButton,
+.trash-drawer.drag-over.decor-target #decorStorageButton {
   transform: scale(1.18) rotate(-4deg);
-  border-color: rgba(154, 94, 83, 0.92);
-  background: rgba(207, 155, 142, 0.95);
-  color: #fffaf6;
-  box-shadow: 0 0 0 6px rgba(207, 155, 142, 0.25), 0 0 24px rgba(89, 48, 42, 0.58);
+  border-color: rgb(92, 92, 92);
+  background: rgb(145, 145, 145);
+  color: white;
+  box-shadow: 0 0 0 6px rgba(150, 150, 150, 0.20), 0 0 24px rgba(40, 40, 40, 0.42);
 }
 
-.trash-drawer.drop-pulse .trash-button {
+.trash-drawer.drop-pulse:not(.decor-target) #trashButton,
+.trash-drawer.drop-pulse.decor-target #decorStorageButton {
   animation: trash-drop-pop 0.46s ease;
 }
 
@@ -2518,6 +2537,10 @@ body.dashboard-card-open .room-view-switcher {
 <div class="due-panel" id="duePanel">
   <div class="due-panel-header">
     <h3 id="duePanelTitle">Plants Due</h3>
+    <div class="due-bulk-actions" id="dueBulkActions" style="display: none;">
+      <button type="button" class="due-mini-button" id="waterAllButton" onclick="bulkMarkDuePlants('water', event)">Water All</button>
+      <button type="button" class="due-mini-button" id="fertilizeAllButton" onclick="bulkMarkDuePlants('fertilize', event)">Fertilize All</button>
+    </div>
     <button class="due-close-button" onclick="closeDuePanel()">×</button>
   </div>
   <div id="duePlantList">
@@ -2627,6 +2650,19 @@ body.dashboard-card-open .room-view-switcher {
 <!-- Edit-mode trashcan and stored sticker drawer -->
 
 <div class="trash-drawer" id="trashDrawer">
+  <button
+    type="button"
+    class="trash-button"
+    id="decorStorageButton"
+    aria-label="Open decor storage"
+    title="Decor Storage"
+  >
+    <svg class="trash-icon" viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 11h22v16H5z"></path>
+      <path d="M3 6h26v5H3z"></path>
+      <path d="M13 16h6"></path>
+    </svg>
+  </button>  
   <div class="trash-panel" id="trashPanel">
     <div id="trashList">
     </div>
@@ -2635,12 +2671,16 @@ body.dashboard-card-open .room-view-switcher {
     type="button"
     class="trash-button"
     id="trashButton"
-    aria-label="Open trash"
+    aria-label="Open plant graveyard"
+    title="Plant Graveyard"
   >
-    <img src="Icons/trash-icon.png" alt="" class="trash-icon">
+    <svg class="trash-icon" viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8 27V12a8 8 0 0 1 16 0v15"></path>
+      <path d="M6 27h20"></path>
+      <path d="M16 9v12M12 13h8"></path>
+    </svg>
     <span class="trash-count" id="trashCount">0</span>
   </button>
-</div>
 </div>
 
 <!-- ===== PLANT CARD MODAL ===== -->
@@ -3819,22 +3859,13 @@ let trashRestoreGhost = null;
 let trashRestoreStartX = 0;
 let trashRestoreStartY = 0;
 
+let activeStorageKind = "plants";
+
 function getTrashedItemsForCurrentMode() {
-  return dashboardItems.filter(plant => {
-    if (!plant.inTrash) {
-      return false;
-    }
-
-    if (editMode === "plants") {
-      return !plant.decorative;
-    }
-
-    if (editMode === "decor") {
-      return plant.decorative;
-    }
-
-    return false;
-  });
+  return dashboardItems.filter(item =>
+    item.inTrash &&
+    (activeStorageKind === "decor" ? item.decorative : !item.decorative)
+  );
 }
 
 function renderTrashDrawer() {
@@ -3865,7 +3896,7 @@ function renderTrashDrawer() {
   if (trashItems.length === 0) {
     trashList.innerHTML = `
     <div class="trash-empty-message">
-      No ${editMode === "decor" ? "furniture" : "plants"} in trash.
+      No ${activeStorageKind === "decor" ? "furniture in storage" : "plants in the graveyard"}.
     </div>
   `;
 
@@ -3949,32 +3980,55 @@ function updateTrashDrawerVisibility() {
 document
   .getElementById("trashButton")
   .addEventListener("click", function(event) {
+    openStorageSection("plants", event);
+  });
+
+const graveyardButton = document.getElementById("trashButton");
+const decorStorageButton = document.getElementById("decorStorageButton");
+const sharedStoragePanel = document.getElementById("trashPanel");
+
+// Place the shared list above both storage buttons.
+sharedStoragePanel.parentNode.insertBefore(decorStorageButton, graveyardButton);
+
+decorStorageButton.addEventListener("click", function(event) {
+  openStorageSection("decor", event);
+});
+
+function openStorageSection(kind, event) {
   event.preventDefault();
   event.stopPropagation();
 
-  const trashPanel =
-    document.getElementById("trashPanel");
+  const wasOpen = sharedStoragePanel.classList.contains("open");
+  const wasSelected = activeStorageKind === kind;
+  activeStorageKind = kind;
 
-  trashPanel.classList.toggle("open");
+  sharedStoragePanel.classList.toggle("open", !wasOpen || !wasSelected);
   renderTrashDrawer();
-});
+
+  const emptyMessage = document.querySelector("#trashList .trash-empty-message");
+  if (emptyMessage) {
+    emptyMessage.textContent = kind === "decor"
+      ? "No furniture in storage."
+      : "No plants in graveyard.";
+  }
+}
 
 function isPointerOverTrash(event) {
-  const trashDrawer =
-    document.getElementById("trashDrawer");
-
-  const trashButton =
-    document.getElementById("trashButton");
+  const trashDrawer = document.getElementById("trashDrawer");
+  const targetButton = document.getElementById(
+    editingPlant?.decorative ? "decorStorageButton" : "trashButton"
+  );
 
   if (
     !trashDrawer ||
-    !trashButton ||
+    !targetButton ||
+    !editingPlant ||
     !trashDrawer.classList.contains("visible")
   ) {
     return false;
   }
 
-  const rect = trashButton.getBoundingClientRect();
+  const rect = targetButton.getBoundingClientRect();
   const extraDropSpace = 14;
 
   return (
@@ -3986,17 +4040,15 @@ function isPointerOverTrash(event) {
 }
 
 function setTrashDragHighlight(isActive) {
-  const trashDrawer =
-    document.getElementById("trashDrawer");
+  const trashDrawer = document.getElementById("trashDrawer");
+  if (!trashDrawer) return;
 
-  if (!trashDrawer) {
-    return;
-  }
+  trashDrawer.classList.toggle("drag-over", isActive);
   trashDrawer.classList.toggle(
-    "drag-over",
-    isActive
+    "decor-target",
+    Boolean(isActive && editingPlant?.decorative)
   );
-}  
+}
 
 function getRoomButtonAtPoint(event) {
   if (
@@ -4045,6 +4097,11 @@ function playTrashDropEffect() {
     return;
   }
 
+  trashDrawer.classList.toggle(
+    "decor-target",
+    Boolean(editingPlant?.decorative)
+  );
+
   trashDrawer.classList.remove("drop-pulse");
 
   requestAnimationFrame(() => {
@@ -4053,7 +4110,7 @@ function playTrashDropEffect() {
 
   window.setTimeout(() => {
     trashDrawer.classList.remove("drop-pulse");
-    }, 500);
+  }, 500);
 }
 
 function moveEditingStickerToTrash() {
@@ -6183,41 +6240,66 @@ function closeModal() {
 
 // ===== PLANTS DUE / WATERED PANEL FUNCTIONS =====
 
-  function openDuePanel(dateString) {
-  const duePanel = document.getElementById("duePanel");
-  const duePanelTitle = document.getElementById("duePanelTitle");
-  const duePlantList = document.getElementById("duePlantList");
-  const calendarPanel = document.getElementById("calendarPanel");
+function getBulkFertilizerPlants() {
+  const today = getTodayString();
 
-  const hasAlreadySelectedThisDate =
-    selectedDueDate === dateString && selectedDuePlants.length > 0;
+  return selectedDuePlants.filter(plant =>
+    hasFertilizerSchedule(plant) &&
+    (shouldShowCalendarFertilizerRing(plant, today) || plant.lastFertilized === today)
+  );
+}
 
-  let plantsDue;
+function updateBulkDueButtons() {
+  const bulkActions = document.getElementById("dueBulkActions");
+  const waterAllButton = document.getElementById("waterAllButton");
+  const fertilizeAllButton = document.getElementById("fertilizeAllButton");
+  const today = getTodayString();
+  const showButtons = selectedDueDate === today && selectedDuePlants.length > 0;
 
-  if (hasAlreadySelectedThisDate) {
-    plantsDue = selectedDuePlants;
-  } else {
-    plantsDue = getPlantsDueOnDate(dateString);
-    const plantsWatered = getPlantsWateredOnDate(dateString);
+  bulkActions.style.display = showButtons ? "flex" : "none";
+  if (!showButtons) return;
 
-    if (plantsDue.length === 0 && plantsWatered.length > 0) {
-      plantsDue = plantsWatered;
+  const allWatered = selectedDuePlants.every(plant => plant.lastWatered === today);
+  waterAllButton.classList.toggle("watered-active", allWatered);
+  waterAllButton.textContent = allWatered ? "Watered All!" : "Water All";
+
+  const fertilizerPlants = getBulkFertilizerPlants();
+  fertilizeAllButton.style.display = fertilizerPlants.length ? "" : "none";
+  const allFertilized = fertilizerPlants.length > 0 &&
+    fertilizerPlants.every(plant => plant.lastFertilized === today);
+  fertilizeAllButton.classList.toggle("fertilized-active", allFertilized);
+  fertilizeAllButton.textContent = allFertilized ? "Fertilized All!" : "Fertilize All";
+}
+
+function bulkMarkDuePlants(action, event) {
+  if (event) event.stopPropagation();
+  if (selectedDueDate !== getTodayString()) return;
+
+  const targets = action === "fertilize"
+    ? getBulkFertilizerPlants()
+    : selectedDuePlants;
+  if (!targets.length) return;
+
+  const today = getTodayString();
+  const field = action === "fertilize" ? "lastFertilized" : "lastWatered";
+  const allMarked = targets.every(plant => plant[field] === today);
+
+  targets.forEach(plant => {
+    if ((plant[field] === today) === allMarked) {
+      if (action === "fertilize") {
+        toggleFertilizedForPlant(plant);
+      } else {
+        toggleWateredForPlant(plant);
+      }
     }
-
-    selectedDuePlants = [...plantsDue];
-  }
-
-  plantsDue.sort((a, b) => {
-    const aNeedsFertilizer =
-      hasFertilizerSchedule(a) &&
-      (shouldShowCalendarFertilizerRing(a, dateString) || a.lastFertilized === dateString);
-
-    const bNeedsFertilizer =
-      hasFertilizerSchedule(b) &&
-      (shouldShowCalendarFertilizerRing(b, dateString) || b.lastFertilized === dateString);
-
-    return bNeedsFertilizer - aNeedsFertilizer;
   });
+
+  refreshCalendarViews();
+}
+
+  function openDuePanel(dateString) {
+  queueMicrotask(updateBulkDueButtons);
+  const duePanel = document.getElementById("duePanel");
 
   const hasDuePlants = getPlantsDueOnDate(dateString).length > 0;
   const hasWateredPlants = getPlantsWateredOnDate(dateString).length > 0;
