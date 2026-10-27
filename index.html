@@ -6124,15 +6124,6 @@ function bulkMarkDuePlants(action, event) {
     ...duePlants,
     ...wateredPlants.filter(plant => !duePlants.includes(plant))
   ];
-  
-  selectedDuePlants = plantsDue;    
-  const duePlants = getPlantsDueOnDate(dateString);
-  const wateredPlants = getPlantsWateredOnDate(dateString);
-  const plantsDue = [
-    ...duePlants,
-    ...wateredPlants.filter(plant => !duePlants.includes(plant))
-  ];
-  selectedDuePlants = plantsDue;
 
   queueMicrotask(updateBulkDueButtons);
   const duePanel = document.getElementById("duePanel");
